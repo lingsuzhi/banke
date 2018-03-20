@@ -1,4 +1,10 @@
-账号：ex-lingsuzhi
+﻿账号：ex-lingsuzhi
 密码：Qq554600654
 
 git :http://gitlab.banketech.com/dashboard/groups
+ftp:file://10.64.4.97/%E7%A7%91%E6%8A%80/%E8%BD%AF%E4%BB%B6/%E5%BC%80%E5%8F%91%E5%B7%A5%E5%85%B7/
+
+后台
+http://pxy-api-sit2.banketech.com/login.html?_t=0.6539336428687548
+huangdebin
+Aaaaa123

@@ -1,3 +1,7 @@
 10.40.129.20    ng
 10.40.137.201
 logop/bkbk@sit2
+
+
+cd /wls/applogs
+tail -f spring.log
