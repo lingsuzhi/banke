@@ -1,10 +1,14 @@
 package com.lsz.web;
 
+import com.lsz.mapper.UserDao;
+import com.lsz.model.bo.User;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
+
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.ArrayList;
@@ -15,6 +19,7 @@ import java.util.Map;
 /**
  * Created by ex-lingsuzhi on 2018/3/20.
  */
+
 @Controller
 @RequestMapping("/test")
 public class TestController {
@@ -23,6 +28,7 @@ public class TestController {
     public ResponseEntity customerList(HttpServletRequest request, Model model) {
         return ResponseEntity.ok("成功123");
     }
+
     @RequestMapping("/freemarker")
     public String freemarker(Map<String, Object> map){
         map.put("name", "Joe");
@@ -40,5 +46,16 @@ public class TestController {
         friends.add(friend);
         map.put("friends", friends);
         return "freemarker";
+    }
+
+    @Autowired
+    private UserDao userDao;
+
+    @RequestMapping("/mybatis")
+    @ResponseBody
+    public User hello(){
+        User user = userDao.getUserById(1);
+        System.out.println(user);
+        return user;
     }
 }

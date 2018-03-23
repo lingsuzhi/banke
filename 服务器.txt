@@ -2,6 +2,6 @@
 10.40.137.201
 logop/bkbk@sit2
 
-
+ps -ef | grep DSP-config
 cd /wls/applogs
 tail -f spring.log
