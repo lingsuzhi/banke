@@ -1,12 +1,11 @@
 package com.lsz.mapper;
 
 import com.lsz.model.bo.User;
-import org.apache.ibatis.annotations.Mapper;
 
-@Mapper
+
 public interface UserDao {
 
-    User getUserById( int id);
+    User getUserById( String id);
 
     int updateUser( User user);
 
