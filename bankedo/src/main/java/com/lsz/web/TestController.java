@@ -7,6 +7,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 
@@ -53,8 +54,8 @@ public class TestController {
 
     @RequestMapping("/mybatis")
     @ResponseBody
-    public User hello(){
-        User user = userDao.getUserById(1);
+    public User hello(@RequestParam String id){
+        User user = userDao.getUserById(id);
         System.out.println(user);
         return user;
     }
