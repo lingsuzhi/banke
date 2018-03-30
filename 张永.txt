@@ -4,3 +4,11 @@ zy13148711497
  
 UAT   http://gitlab.banketech.com/snippets/4
 sit2   http://gitlab.banketech.com/snippets/1
+
+
+
+
+spring cloud
+http://service.dev.banketech.com:8700/consul/dev/services/UMS-branch
+
+http://reg-ui-sit2.sit.banketech.com/consul/sit2/services

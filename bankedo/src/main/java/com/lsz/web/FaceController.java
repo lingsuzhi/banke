@@ -3,7 +3,6 @@ package com.lsz.web;
 import com.lsz.common.SoaConnectionFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -17,11 +16,12 @@ import java.util.Map;
 /**
  * Created by ex-lingsuzhi on 2018/3/20.
  */
-@Controller("/face")
+@Controller
+@RequestMapping("/face")
 public class FaceController {
     protected static Logger log = LoggerFactory.getLogger(FaceController.class);
 
-       @RequestMapping("/face.php")
+    @RequestMapping("/face.php")
     public String face(Model model){
         return "face";
     }

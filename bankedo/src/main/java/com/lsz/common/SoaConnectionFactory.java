@@ -122,8 +122,11 @@ public class SoaConnectionFactory {
 
 
     public static ResponseEntity<String> goFase(String url, String post, String data, Object... objArr) {
-        log.info("url:{},Method:{}", url, post);
-        log.info("data:{}", data);
+        log.info("url:{}-----------------Method:{}", url, post);
+        if(data != null ){
+            log.info("data:{}", data);
+        }
+
         Map maps = null;
         if (data != null && !data.isEmpty()) {
             maps = (Map) JSON.parse(data);
@@ -142,6 +145,7 @@ public class SoaConnectionFactory {
         }
         HttpEntity<Object> httpEntity = new HttpEntity<Object>(maps, getHead());
         HttpEntity<String> json = restTemplate.exchange(url, httpMethod, httpEntity, String.class, objArr);
+        log.info("returnData:{}", json);
         return (ResponseEntity<String>) json;
     }
 }

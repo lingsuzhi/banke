@@ -5,3 +5,6 @@ logop/bkbk@sit2
 ps -ef | grep DSP-config
 cd /wls/applogs
 tail -f spring.log
+
+
+uat   10.40.136.9   logop/banke@uat

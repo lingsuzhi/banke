@@ -16,6 +16,14 @@
         //debugger
         var postname = $("input[name='post1']:checked").val();
         var url = $("#url").val();
+
+        if(url){
+
+        }else{
+            alert("Url不能为空！");
+            return false;
+        }
+
         var returntxt = $("#returntxt");
         var data1 = '';
 
@@ -57,7 +65,7 @@
 
 <form action="" method="get">
     <br/>
-    Url：<input id="url" style="width:500px;" value="uvip/privilege"/><input type="button" id="okbtn" value="确 定"/><br/>
+    Url：<input id="url" style="width:500px;" value=""/><input type="button" id="okbtn" value="Send"/><br/>
     <label><input name="post1" type="radio" value="GET" checked="checked"/>Get </label> &nbsp
     <label><input name="post1" type="radio" value="POST"/>Post </label> &nbsp
     <label><input name="post1" type="radio" value="PUT"/>Put </label> &nbsp
