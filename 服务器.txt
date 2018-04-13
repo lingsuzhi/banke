@@ -8,3 +8,6 @@ tail -f spring.log
 
 
 uat   10.40.136.9   logop/banke@uat
+
+
+10.64.4.101    dev

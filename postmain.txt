@@ -1,0 +1,4 @@
+设置angentNo   请求头：BKC-agentNo
+本地           http://127.0.0.1:8000/api
+dev            http://10.64.4.101:8003
+sit2           https://disp-api-sit2.banketech.com/                          设置请求头 Authorization: "Bearer UEBic25mYm9BamNvYWFzM0dWbFcyZGVn"   找个用户token  base64加密

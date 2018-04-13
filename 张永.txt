@@ -12,3 +12,6 @@ spring cloud
 http://service.dev.banketech.com:8700/consul/dev/services/UMS-branch
 
 http://reg-ui-sit2.sit.banketech.com/consul/sit2/services
+
+
+https://disp-api-sit2.banketech.com
