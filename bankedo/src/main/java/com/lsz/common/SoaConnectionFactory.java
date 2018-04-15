@@ -1,6 +1,7 @@
 package com.lsz.common;
 
 import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONException;
 import com.lsz.common.soa.BaseResponse;
 import org.codehaus.jackson.JsonParseException;
 import org.codehaus.jackson.map.JsonMappingException;
@@ -15,6 +16,7 @@ import org.springframework.http.client.SimpleClientHttpRequestFactory;
 import org.springframework.web.client.RestTemplate;
 
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 
@@ -119,23 +121,46 @@ public class SoaConnectionFactory {
         }
         return null;
     }
+public static Map strToMap(String data){
+    Map maps = null;
+    if (data != null && !data.isEmpty()) {
+        try {
+            maps = (Map) JSON.parse(data);
+        } catch (JSONException exception) {
+            //如果他不是json 尝试
+            String[] sArrRow = data.split("\n");
+            maps = new HashMap<String,String>();
+            if(sArrRow!=null && sArrRow.length>0){
+                for(String str :sArrRow){
+                    String[] sArrCol =  str.split("=");
+                    if(sArrCol!= null && sArrCol.length>1){
+                        maps.put(sArrCol[0],sArrCol[1]);
+                    }
+                }
+            }
+        }
 
 
-    public static ResponseEntity<String> goFase(String url, String post, String data, Object... objArr) {
-        log.info("url:{}-----------------Method:{}", url, post);
-        if(data != null ){
+    }
+    return  maps;
+}
+
+    public static ResponseEntity<String> goFase(String url, String post, String data,String head, Object... objArr) {
+        log.info("url:{} ######### Method:{}", url, post);
+        if (data != null) {
             log.info("data:{}", data);
         }
-
-        Map maps = null;
-        if (data != null && !data.isEmpty()) {
-            maps = (Map) JSON.parse(data);
+        if (head != null) {
+            log.info("head:{}", head);
         }
+        Map dataMap = strToMap(data);
+        Map<String,String> headMap = strToMap(head);
+
         post = post.toUpperCase();
         HttpMethod httpMethod = HttpMethod.GET;
         if ("GET".equals(post)) {
             httpMethod = HttpMethod.GET;
-            url = getUrl(url,maps);
+            url = getUrl(url, dataMap);
         } else if ("POST".equals(post)) {
             httpMethod = HttpMethod.POST;
         } else if ("PUT".equals(post)) {
@@ -143,7 +168,15 @@ public class SoaConnectionFactory {
         } else if ("DELETE".equals(post)) {
             httpMethod = HttpMethod.DELETE;
         }
-        HttpEntity<Object> httpEntity = new HttpEntity<Object>(maps, getHead());
+        HttpHeaders httpHeaders = getHead();
+        if(headMap !=null && headMap.size()>0){
+            for (String s1 :headMap.keySet()){
+                httpHeaders.set(s1,headMap.get(s1));
+
+            }
+
+        }
+        HttpEntity<Object> httpEntity = new HttpEntity<Object>(dataMap, httpHeaders);
         HttpEntity<String> json = restTemplate.exchange(url, httpMethod, httpEntity, String.class, objArr);
         log.info("returnData:{}", json);
         return (ResponseEntity<String>) json;

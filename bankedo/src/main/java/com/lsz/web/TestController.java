@@ -9,9 +9,10 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
-
+import sun.misc.ProxyGenerator;
 
 import javax.servlet.http.HttpServletRequest;
+import java.io.FileOutputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -31,7 +32,7 @@ public class TestController {
     }
 
     @RequestMapping("/freemarker")
-    public String freemarker(Map<String, Object> map){
+    public String freemarker(Map<String, Object> map) {
         map.put("name", "Joe");
         map.put("sex", 1);    //sex:性别，1：男；0：女；
 
@@ -54,9 +55,23 @@ public class TestController {
 
     @RequestMapping("/mybatis")
     @ResponseBody
-    public User hello(@RequestParam String id){
+    public User hello(@RequestParam String id) {
         User user = userDao.getUserById(id);
+  //      tofile(userDao.getClass());
         System.out.println(user);
         return user;
+    }
+
+    public static void tofile(Class cls) {
+
+        try {
+            byte[] data = ProxyGenerator.generateProxyClass("$Proxy0", new Class[]{cls});
+            FileOutputStream os = new FileOutputStream("D:/$Proxy0.class");
+            os.write(data);
+            os.flush();
+            os.close();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 }
