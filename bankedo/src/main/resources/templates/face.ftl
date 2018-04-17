@@ -16,11 +16,11 @@
     });
     var postUrl = '';
     function okClick() {
-        postUrl = "facedo";
+        postUrl = "/face/facedo";
         doPost();
     }
     function saveClick() {
-        postUrl = "savedo";
+        postUrl = "/face/savedo";
         doPost();
     }
     function doPost() {

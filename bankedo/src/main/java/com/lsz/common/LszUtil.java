@@ -23,7 +23,6 @@ public class LszUtil {
      **/
     public static int getRand0to9() {
         Random r = new Random();
-        //r.setSeed(System.currentTimeMillis());
         return r.nextInt(10);
     }
 

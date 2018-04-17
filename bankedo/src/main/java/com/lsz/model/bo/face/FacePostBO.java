@@ -5,6 +5,8 @@ package com.lsz.model.bo.face;
  * Created by Administrator on 2018/4/15 0015.
  */
 
+import com.alibaba.fastjson.JSONObject;
+
 public class FacePostBO {
     private String url;
     private String post;
@@ -41,5 +43,10 @@ public class FacePostBO {
 
     public void setHead(String head) {
         this.head = head;
+    }
+
+    @Override
+    public String toString() {
+        return JSONObject.toJSONString(this);
     }
 }
