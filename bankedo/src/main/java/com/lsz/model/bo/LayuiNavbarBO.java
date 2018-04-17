@@ -1,8 +1,13 @@
 package com.lsz.model.bo;
 
 import com.alibaba.fastjson.JSONObject;
+import sun.misc.BASE64Decoder;
+import sun.misc.BASE64Encoder;
 
+import java.io.IOException;
+import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
+import java.util.Base64;
 import java.util.List;
 
 /**
@@ -15,6 +20,35 @@ public class LayuiNavbarBO {
     private Boolean spread;   //是否父节点
     private List<LayuiNavbarBO> children = new ArrayList<>();
     private String url;
+//    public void setUrlEx(String url)   {
+//        final BASE64Encoder encoder = new BASE64Encoder();
+//        final byte[] textByte;
+//        try {
+//            textByte = url.getBytes("UTF-8");
+//            this.url = encoder.encode(textByte);
+//        } catch (UnsupportedEncodingException e) {
+//            e.printStackTrace();
+//        }
+//
+//    }
+//    public String getUrlEx()  {
+//        final BASE64Decoder decoder = new BASE64Decoder();
+//        try {
+//            return  new String(decoder.decodeBuffer(this.url), "UTF-8");
+//        } catch (IOException e) {
+//            e.printStackTrace();
+//        }
+//        return null;
+//    }
+    public void setTitleEx(String title) {
+        if (title != null) {
+            if (".json".equals(title.substring(title.length() - 5))) {
+                title = title.substring(0, title.length() - 5);
+            }
+        }
+
+        this.title = title;
+    }
 
     public String getUrl() {
         return url;

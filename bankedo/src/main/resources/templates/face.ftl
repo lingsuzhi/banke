@@ -12,7 +12,6 @@
         idOnclick("savebtn", saveClick);
 
 
-
     });
     var postUrl = '';
     function okClick() {
@@ -31,7 +30,7 @@
         if (url) {
 
         } else {
-            url =  "http://" + location.host + "/face/facetest";
+            url = "http://" + location.host + "/face/facetest";
         }
 
         var returntxt = $("#returntxt");
@@ -47,14 +46,14 @@
         if (txt) {
             head = txt.trim();
         }
-        myAjax(postname, url, returntxt, data1,head);
+        myAjax(postname, url, returntxt, data1, head);
     }
-    function myAjax(postname, url, returntxt, data1,head) {
+    function myAjax(postname, url, returntxt, data1, head) {
         var data = {
             "url": url,
             "post": postname,
             "data": data1,
-            "head":head
+            "head": head
         };
         returntxt.val("");
         var post = {
@@ -75,13 +74,14 @@
 
         $.ajax(post);
     }
+
 </script>
 <body>
- <div style="margin-top: 12px">
-    地址 &nbsp<input id="url" style="width:600px;" value=""/>
-     &nbsp<input type="button" id="okbtn" value="确 定"/>
-     &nbsp<input type="button" id="savebtn" value="保 存"/>
-     <br/>
+<div style="margin-top: 12px">
+    地址 &nbsp<input id="url" style="width:600px;" value="${(obj.url)!}"/>
+    &nbsp<input type="button" id="okbtn" value="确 定"/>
+    &nbsp<input type="button" id="savebtn" value="保 存"/>
+    <br/>
     <label><input name="post1" type="radio" value="GET" checked="checked"/>Get </label> &nbsp
     <label><input name="post1" type="radio" value="POST"/>Post </label> &nbsp
     <label><input name="post1" type="radio" value="PUT"/>Put </label> &nbsp
@@ -90,15 +90,23 @@
     <div style="float: left">
         <div style="width: 350px;float: left">
             请求头<br/>
-            <textarea id="headtxt" style="width:98%;height:100px"></textarea>
+            <textarea id="headtxt" style="width:98%;height:100px">${(obj.head)!}</textarea>
             参数<br/>
-            <textarea id="sendtxt" style="width:98%;height:500px"></textarea>
+            <textarea id="sendtxt" style="width:98%;height:500px">${(obj.data)!}</textarea>
         </div>
         <div style="float: left">
-             返回值<br/>
+            返回值<br/>
             <textarea id="returntxt" style="width:450px;height:620px"></textarea>
         </div>
     </div>
- </div>
+</div>
 </body>
 </html>
+<script>
+    var dPost = "${(obj.post)!}";
+    if (dPost != '') {
+        $("input:radio[value='"+dPost+"']").attr('checked', 'checked');
+    }
+
+
+</script>
