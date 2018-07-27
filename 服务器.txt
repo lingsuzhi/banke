@@ -1,4 +1,4 @@
-10.40.129.20    ng
+10.40.129.20    ng                 logop/banke@log
 10.40.137.201
 logop/bkbk@sit2
 

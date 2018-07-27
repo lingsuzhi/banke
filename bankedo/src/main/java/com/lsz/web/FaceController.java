@@ -1,11 +1,10 @@
 package com.lsz.web;
 
-import com.alibaba.fastjson.JSONObject;
-import com.lsz.common.FileUtils;
 import com.lsz.common.SoaConnectionFactory;
+import com.lsz.common.soa.ResponseInfo;
 import com.lsz.model.bo.face.FacePostBO;
-import com.lsz.model.bo.face.PostMan;
-import com.lsz.service.SaveFaceService;
+import com.lsz.model.bo.face.SavePostBO;
+import com.lsz.service.SaveFacesService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,7 +15,6 @@ import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
-import java.io.File;
 import java.util.Enumeration;
 import java.util.Map;
 
@@ -29,7 +27,7 @@ public class FaceController {
     protected static Logger log = LoggerFactory.getLogger(FaceController.class);
 
     @Autowired
-    private SaveFaceService saveFaceService;
+    private SaveFacesService saveFacesService;
 
     @RequestMapping("/face.php")
     public String face(Model model) {
@@ -46,9 +44,8 @@ public class FaceController {
 
     @PostMapping("/savedo")
     @ResponseBody
-    public PostMan savedo(@RequestBody FacePostBO facePostBO) {
-        PostMan postMan = saveFaceService.saveDo(facePostBO);
-        saveFaceService.saveFile(postMan);
+    public String savedo(@RequestBody SavePostBO savePostBO) {
+        String postMan = saveFacesService.saveDo(savePostBO);
         return postMan;
     }
 
@@ -59,10 +56,10 @@ public class FaceController {
      * @return
      */
     @RequestMapping("/opendo")
-    public String opendo(@RequestParam String fileStr,Model model) {
+    public String opendo(@RequestParam String fileStr, Model model) {
 
-        FacePostBO facePostBO  = saveFaceService.openFile(fileStr);
-        model.addAttribute("obj",facePostBO);
+        SavePostBO savePostBO = saveFacesService.openFile(fileStr);
+        model.addAttribute("obj", savePostBO);
         return "face";
     }
 
@@ -84,4 +81,14 @@ public class FaceController {
         ResponseEntity entity = ResponseEntity.ok(s);
         return entity;
     }
+
+    @RequestMapping("/deldo")
+    @ResponseBody
+    public ResponseInfo<String> delFace(String name) {
+        if (!StringUtils.isEmpty(name) && saveFacesService.deldo(name)) {
+            return ResponseInfo.error("删除成功");
+        }
+        return ResponseInfo.success("删除失败");
+    }
+
 }

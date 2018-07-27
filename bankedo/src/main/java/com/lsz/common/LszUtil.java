@@ -1,6 +1,6 @@
 package com.lsz.common;
 
-import com.github.pagehelper.Page;
+
 import org.apache.commons.beanutils.PropertyUtilsBean;
 import org.springframework.http.ResponseEntity;
 import org.springframework.util.StringUtils;
@@ -12,11 +12,6 @@ import java.util.*;
 
 
 public class LszUtil {
-    public static ResponseEntity returnList(List list) {
-
-
-        return ResponseEntity.ok(toMap("data", list, "count", ((Page) list).getTotal(), "msg", "", "code", 0));
-    }
 
     /**
      * 获取一位随机数 0到9

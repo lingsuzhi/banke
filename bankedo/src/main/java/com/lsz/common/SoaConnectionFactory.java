@@ -13,6 +13,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.client.SimpleClientHttpRequestFactory;
+import org.springframework.util.StringUtils;
 import org.springframework.web.client.RestTemplate;
 
 import java.io.IOException;
@@ -155,7 +156,9 @@ public static Map strToMap(String data){
         }
         Map dataMap = strToMap(data);
         Map<String,String> headMap = strToMap(head);
-
+        if (StringUtils.isEmpty(post)) {
+            post = "GET";
+        }
         post = post.toUpperCase();
         HttpMethod httpMethod = HttpMethod.GET;
         if ("GET".equals(post)) {

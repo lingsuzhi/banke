@@ -1,7 +1,7 @@
 package com.lsz.web;
 
 import com.lsz.model.bo.LayuiNavbarBO;
-import com.lsz.service.SaveFaceService;
+import com.lsz.service.SaveFacesService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -18,7 +18,7 @@ public class IndexController {
 
 
     @Autowired
-    private SaveFaceService saveFaceService;
+    private SaveFacesService saveFacesService;
 
     @RequestMapping("/index.php")
     public String index(Model model) {
@@ -36,7 +36,7 @@ public class IndexController {
     @ResponseBody
     public List<LayuiNavbarBO> navbar1() {
 
-        return saveFaceService.getNavbar();
+        return saveFacesService.getNavbar();
 //        List<LayuiNavbarBO> list = new ArrayList<>();
 //
 //        LayuiNavbarBO layuiNavbarBO = new LayuiNavbarBO();

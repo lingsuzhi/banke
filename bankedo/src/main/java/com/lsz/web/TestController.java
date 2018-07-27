@@ -50,17 +50,17 @@ public class TestController {
         return "freemarker";
     }
 
-    @Autowired
-    private UserDao userDao;
-
-    @RequestMapping("/mybatis")
-    @ResponseBody
-    public User hello(@RequestParam String id) {
-        User user = userDao.getUserById(id);
-  //      tofile(userDao.getClass());
-        System.out.println(user);
-        return user;
-    }
+//    @Autowired
+//    private UserDao userDao;
+//
+//    @RequestMapping("/mybatis")
+//    @ResponseBody
+//    public User hello(@RequestParam String id) {
+//        User user = userDao.getUserById(id);
+//  //      tofile(userDao.getClass());
+//        System.out.println(user);
+//        return user;
+//    }
 
     public static void tofile(Class cls) {
 
