@@ -12,4 +12,8 @@ public class SavePostBO implements Serializable {
     private String head;
     private String returnStr;
     private String name;
+    /**
+     * 描述
+     */
+    private String describe;
 }

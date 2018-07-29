@@ -1,6 +1,12 @@
 package com.lsz.common;
 
+import com.google.common.base.MoreObjects;
+
+import javax.annotation.Resources;
 import java.io.*;
+import java.net.URL;
+
+import static com.google.common.base.Preconditions.checkArgument;
 
 /*
  * Created by ex-lingsuzhi on 2018/4/16.
@@ -63,5 +69,13 @@ public class FileUtils {
                 e.printStackTrace();
             }
         }
+    }
+    public static URL getResource(String resourceName) {
+        ClassLoader loader = MoreObjects.firstNonNull(
+                Thread.currentThread().getContextClassLoader(),
+                Resources.class.getClassLoader());
+        URL url = loader.getResource(resourceName);
+        checkArgument(url != null, "resource %s not found.", resourceName);
+        return url;
     }
 }

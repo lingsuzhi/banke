@@ -1,12 +1,30 @@
 <#assign ctx=request.getContextPath()>
+<!DOCTYPE HTML>
 <html>
-<link rel="stylesheet" href="${ctx}/css/bootstrap.min.css" media="all"/>
 <script src="${ctx}/js/common/jquery.js"></script>
 <script src="${ctx}/js/common/common.js"></script>
-
 <style>
     div {
         margin: 5px;
+    }
+
+    .txtkey {
+        margin-left: 3px;
+        width: 150px;
+    }
+
+    .txtvalue {
+        margin-left: 3px;
+        width: 200px;
+    }
+
+    input {
+        height: 22px;
+    }
+
+    .headCls {
+        margin-bottom: 6px;
+        margin-left: 6px;
     }
 </style>
 <body>
@@ -21,23 +39,42 @@
         </select>
         &nbsp<input type="button" id="savebtn" value="保 存"/>
         &nbsp<input type="button" id="delbtn" value="删 除"/>
-        &nbsp<input type="button" id="wordbtn" value="接口文档"/>
+        &nbsp<input type="button" id="docbtn" value="接口文档"/>
     </div>
     <div>
-    地址：<input id="url" style="width:600px;" value="${(obj.url)!}"/>
-        &nbsp<input type="button" id="okbtn" value="确 定"/>
+        地址：<input id="url" style="width:600px;" value="${(obj.url)!}"/>
+        &nbsp<input type="button" id="okbtn" value="测 试"/>
 
     </div>
     <div style="float: left">
-        <div style="width: 450px;float: left">
-            请求头<br/>
-            <textarea id="headtxt" style="width:98%;height:100px">${(obj.head)!}</textarea>
-            参数<br/>
+        <div style="width: 500px; float: left">
+
+            <fieldset>
+
+                <legend>请求头</legend>
+            <#--<textarea id="headtxt" style="width:98%;height:100px">${(obj.head)!}</textarea>-->
+
+                <div id="headField">
+                    <div data-id="1" class="headCls">
+                        key<input class="txtkey" onchange="txtkeyChange(this)">
+                        val<input class="txtvalue">
+                        <button onclick="delBtn(this)">X</button>
+                    </div>
+                </div>
+
+            </fieldset>
+            <div>参数</div>
             <textarea id="sendtxt" style="width:98%;height:500px">${(obj.parameter)!}</textarea>
+
+
         </div>
         <div style="float: left">
-            返回值<br/>
-            <textarea id="returntxt" style="width:450px;height:620px">${(obj.returnStr)!}</textarea>
+            <fieldset>
+
+                <legend>返回值</legend>
+
+                <textarea id="returntxt" style="width:500px;height:620px">${(obj.returnStr)!}</textarea>
+            </fieldset>
         </div>
     </div>
 </div>
@@ -48,26 +85,143 @@
 
 
 <script>
+
     $(function () {
+        $("#postSelect").val("${(obj.method)!}");
+
         idOnclick("okbtn", okClick);
         idOnclick("savebtn", saveClick);
-
+        // setHead("key1" + "\t\t" + "val1" + "\r\n" + "key2" + "\t\t" + "22");
+        setHead("${(obj.head)!}");
         $("#delbtn").click(function () {
             $.get("/face/deldo" + "?name=" + $("#name").val());
         });
-        $("#postSelect").val("${(obj.method)!}");
+
+        $("#docbtn").click(function () {
+            window.location.href = "/face/docdo" + "?name=" + $("#name").val();
+            //    $.get("/face/docdo" + "?name=" + $("#name").val());
+        });
 
     });
     var postUrl = '';
+
+    function delBtn(btn) {
+        var div = $(btn).parent();
+        var id = div.attr("data-id");
+        if (id) {
+            id = Number(id);
+            if (id == 1) {
+                //清空
+                div.children(".txtkey").val("");
+                div.children(".txtvalue").val("");
+            } else {
+                //删除
+                div.remove();
+            }
+        }
+    }
+
+    function addHeadTxt(id) {
+        var divs = $("#headField").children(".headCls");
+        var div = divs.eq(0);
+        var id = divs.eq(divs.length - 1).attr("data-id");
+        if (id) {
+            id = Number(id) + 1;
+            divNew = div.clone();
+            divNew.children(".txtkey").val("");
+            divNew.children(".txtvalue").val("");
+
+            divNew.attr("data-id", id);
+            //$("#headField").append(divNew.html());
+            divNew.appendTo("#headField");
+        }
+        return divNew;
+    }
+
+    function txtkeyChange(input) {
+        var val = $(input).val();
+        if (val) {
+            //假如文本框里有值
+            var div = $(input).parent();
+            var id = div.attr("data-id");
+            if (id) {
+                id = Number(id) + 1;
+                var divNew = div.parent().children("[data-id=" + id + "]");
+                if (divNew && divNew.length > 0) {
+                    //存在的情况
+
+                } else {
+                    addHeadTxt();
+                }
+            }
+        }
+    }
+
     function okClick() {
         postUrl = "/face/facedo";
         $("#returntxt").val("");
         doPost();
     }
+
     function saveClick() {
         postUrl = "/face/savedo";
         doSave();
     }
+
+    /**
+     * 获取请求头文本
+     * 用 tab=tab 跟    tab:tab     区分
+     */
+    function getHead() {
+        var returnStr = "";
+        var divs = $("#headField").children(".headCls");
+        for (var i in divs) {
+            var div = divs.eq(i);
+            var keytxt = div.children(".txtkey");
+            var valtxt = div.children(".txtvalue");
+
+            if (keytxt.val()) {
+                if (returnStr.length != 0) {
+                    returnStr = returnStr + "\t:\t"
+                }
+                returnStr = returnStr + keytxt.val() + "\t=\t" + valtxt.val();
+            }
+        }
+        return returnStr;
+    }
+
+    /*
+    设置请求头
+     */
+    function setHead(val) {
+        if (val == null || val.length == 0) {
+            return false;
+        }
+        var arr = val.split("\t:\t");
+        var id = 1;
+        for (var ii in arr) {
+            var str = arr[ii];
+            if (str.length > 0) {
+                var row = str.split("\t=\t");
+                if (row.length > 1) {
+                    var divNew = $("#headField").children("[data-id=" + id + "]");
+                    if (divNew && divNew.length > 0) {
+                        //存在的情况
+                        addHeadTxt();
+
+                    } else {
+                        divNew = addHeadTxt();
+                    }
+                    var keytxt = divNew.children(".txtkey");
+                    var valtxt = divNew.children(".txtvalue");
+                    keytxt.val(row[0]);
+                    valtxt.val(row[1]);
+                    id++;
+                }
+            }
+        }
+    }
+
     function doSave() {
         var postname = $("#postSelect").val();
         var url = $("#url").val();
@@ -84,7 +238,7 @@
         }
         var txt = $("#sendtxt").val();
         var returntxt = $("#returntxt").val();
-        var head = $("#headtxt").val();
+        var head = getHead();
         var data = {
             "name": name,
             "url": url,
@@ -97,7 +251,7 @@
         $.ajax({
             type: "POST",
             url: postUrl,
-            contentType:"application/json",
+            contentType: "application/json",
             data: JSON.stringify(data),
             success: function (data) {
                 console.log(data);
@@ -107,6 +261,7 @@
             }
         });
     }
+
     function doPost() {
         //debugger
         var postname = $("#postSelect").val();
@@ -131,12 +286,13 @@
         }
         var head = '';
 
-        txt = $("#headtxt").val();
+        txt = getHead();
         if (txt) {
             head = txt.trim();
         }
         myAjax(postname, url, data1, head);
     }
+
     function myAjax(postname, url, data1, head) {
         var data = {
             "url": url,

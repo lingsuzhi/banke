@@ -69,11 +69,28 @@ public class SaveFacesService {
         }
         return false;
     }
+
+    public String getFileJson(String name) {
+        String str = "";
+        File file = new File(FilePath + File.separator + name + ".json");
+        if (file.exists()) {
+            str = FileUtils.FileUTF8ToStr(file);
+        }
+        return str;
+    }
+    public SavePostBO getFileJsonPostBO(String name){
+        String str = getFileJson(name);
+        if(StringUtils.isEmpty(str)){
+            return null;
+        }
+        SavePostBO savePostBO = JSONObject.parseObject(str,SavePostBO.class);
+        return  savePostBO;
+    }
     public List<LayuiNavbarBO> getNavbar() {
         File dir = new File(FileDirP);
         List<LayuiNavbarBO> list = new LinkedList<>();
         File[] files = dir.listFiles();
-        if(files == null) return null;
+        if (files == null) return null;
         int id = 0;
         boolean dirB1 = true;
         for (File file : files) {
@@ -97,7 +114,6 @@ public class SaveFacesService {
                         /////
                         LayuiNavbarBO layuiNavbarBO2 = new LayuiNavbarBO();
                         String fileStr = file.getName() + File.separator + file2.getName();
-
 
 
                         layuiNavbarBO2.setUrl("face/opendo?fileStr=" + MD5Utils.base64(fileStr));
