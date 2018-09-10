@@ -9,7 +9,6 @@ import com.lsz.service.SaveFacesService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.jackson.JsonObjectDeserializer;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -99,6 +98,12 @@ public class FaceController {
         return ResponseInfo.success("删除失败");
     }
 
+    private String wordNToRN(String s) {
+        if (StringUtils.isEmpty(s)) {
+            return "";
+        }
+        return s.replace("\n", "\r\n");
+    }
     /**
      * 文档
      *
@@ -109,8 +114,8 @@ public class FaceController {
     public void docdo(String name, HttpServletResponse response) {
         if (!StringUtils.isEmpty(name)) {
             SavePostBO savePostBO = saveFacesService.getFileJsonPostBO(name);
-            if(savePostBO == null){
-               return;
+            if (savePostBO == null) {
+                return;
             }
             Map<String, String> map = new HashMap<String, String>();
             map.put("${name}", savePostBO.getName());
@@ -118,13 +123,17 @@ public class FaceController {
             map.put("${method}", savePostBO.getMethod());
 
             String head = savePostBO.getHead();
-            if(!StringUtils.isEmpty(head)){
-                head = head.replace("\t:\t" ,"\r\n");
+            if (!StringUtils.isEmpty(head)) {
+                head = head.replace("\t:\t", "\r\n");
             }
             map.put("${head}", head);
 
-            map.put("${parameter}", savePostBO.getParameter());
-            map.put("${returnStr}", savePostBO.getReturnStr());
+            map.put("${parameter}", wordNToRN(savePostBO.getParameter()));
+            String returnStr = savePostBO.getReturnStr();
+            if (!StringUtils.isEmpty(returnStr)) {
+                returnStr = returnStr.replace("\n", "\r\n");
+            }
+            map.put("${returnStr}", returnStr);
             map.put("${describe}", savePostBO.getDescribe());
 
             String fileName = map.get("${name}") + "接口.doc";

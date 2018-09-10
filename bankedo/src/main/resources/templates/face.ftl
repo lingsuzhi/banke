@@ -15,7 +15,7 @@
 
     .txtvalue {
         margin-left: 3px;
-        width: 200px;
+        width: 300px;
     }
 
     input {
@@ -47,7 +47,7 @@
 
     </div>
     <div style="float: left">
-        <div style="width: 500px; float: left">
+        <div style="width: 600px; float: left">
 
             <fieldset>
 
@@ -64,7 +64,7 @@
 
             </fieldset>
             <div>参数</div>
-            <textarea id="sendtxt" style="width:98%;height:500px">${(obj.parameter)!}</textarea>
+            <textarea id="sendtxt" style="width:98%;height:600px">${(obj.parameter)!}</textarea>
 
 
         </div>
@@ -73,7 +73,7 @@
 
                 <legend>返回值</legend>
 
-                <textarea id="returntxt" style="width:500px;height:620px">${(obj.returnStr)!}</textarea>
+                <textarea id="returntxt" style="width:600px;height:670px">${(obj.returnStr)!}</textarea>
             </fieldset>
         </div>
     </div>
@@ -114,6 +114,15 @@
                 //清空
                 div.children(".txtkey").val("");
                 div.children(".txtvalue").val("");
+
+                var divNew = div.parent().children("[data-id=" + 2 + "]");
+
+                if(divNew ){
+                    var txt = divNew.children(".txtkey").val();
+                    if(txt==""){
+                        divNew.remove();
+                    }
+                }
             } else {
                 //删除
                 div.remove();
@@ -307,6 +316,9 @@
             success: function (data) {
                 var tmpJson = JSON.stringify(data, null, 4);
                 $("#returntxt").val(tmpJson);
+                console.log(data);
+            },error: function (data) {
+                $("#returntxt").val(data.responseJson);
                 console.log(data);
             },
             beforeSend: function (xhr) {

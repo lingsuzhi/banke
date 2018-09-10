@@ -2,6 +2,7 @@ package com.lsz.common;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONException;
+import com.alibaba.fastjson.JSONObject;
 import com.lsz.common.soa.BaseResponse;
 import org.codehaus.jackson.JsonParseException;
 import org.codehaus.jackson.map.JsonMappingException;
@@ -122,31 +123,59 @@ public class SoaConnectionFactory {
         }
         return null;
     }
-public static Map strToMap(String data){
-    Map maps = null;
-    if (data != null && !data.isEmpty()) {
-        try {
-            maps = (Map) JSON.parse(data);
-        } catch (JSONException exception) {
-            //如果他不是json 尝试
-            String[] sArrRow = data.split("\n");
-            maps = new HashMap<String,String>();
-            if(sArrRow!=null && sArrRow.length>0){
-                for(String str :sArrRow){
-                    String[] sArrCol =  str.split("=");
-                    if(sArrCol!= null && sArrCol.length>1){
-                        maps.put(sArrCol[0],sArrCol[1]);
+
+    public static Map strToMap(String data) {
+        Map maps = null;
+        if (data != null && !data.isEmpty()) {
+            try {
+                maps = (Map) JSON.parse(data);
+            } catch (JSONException exception) {
+                //如果他不是json 尝试
+                String[] sArrRow = data.split("\n");
+                maps = new HashMap<String, String>();
+                if (sArrRow != null && sArrRow.length > 0) {
+                    for (String str : sArrRow) {
+                        String[] sArrCol = str.split("=");
+                        if (sArrCol != null && sArrCol.length > 1) {
+                            maps.put(sArrCol[0], sArrCol[1]);
+                        }
                     }
                 }
             }
+
+
         }
-
-
+        return maps;
     }
-    return  maps;
-}
 
-    public static ResponseEntity<String> goFase(String url, String post, String data,String head, Object... objArr) {
+    private static Map strTabToMap(String data) {
+        if (StringUtils.isEmpty(data)) {
+            return null;
+        }
+        Map maps = null;
+        if (data != null && !data.isEmpty()) {
+            try {
+                maps = (Map) JSONObject.parse(data);
+            } catch (Exception exception) {
+                //如果他不是json 尝试
+                String[] sArrRow = data.split("\t:\t");
+                maps = new HashMap<String, String>();
+                if (sArrRow != null && sArrRow.length > 0) {
+                    for (String str : sArrRow) {
+                        String[] sArrCol = str.split("\t=\t");
+                        if (sArrCol != null && sArrCol.length > 1) {
+                            maps.put(sArrCol[0], sArrCol[1]);
+                        }
+                    }
+                }
+            }
+
+
+        }
+        return maps;
+    }
+
+    public static ResponseEntity<String> goFase(String url, String post, String data, String head, Object... objArr) {
         log.info("url:{} ######### Method:{}", url, post);
         if (data != null) {
             log.info("data:{}", data);
@@ -155,7 +184,7 @@ public static Map strToMap(String data){
             log.info("head:{}", head);
         }
         Map dataMap = strToMap(data);
-        Map<String,String> headMap = strToMap(head);
+        Map<String, String> headMap = strTabToMap(head);
         if (StringUtils.isEmpty(post)) {
             post = "GET";
         }
@@ -166,15 +195,19 @@ public static Map strToMap(String data){
             url = getUrl(url, dataMap);
         } else if ("POST".equals(post)) {
             httpMethod = HttpMethod.POST;
+            String tmpS = headMap == null ? null : headMap.get("Content-Type");
+            if (tmpS == null || !tmpS.contains("application/json")) {
+                url = getUrl(url, dataMap);
+            }
         } else if ("PUT".equals(post)) {
             httpMethod = HttpMethod.PUT;
         } else if ("DELETE".equals(post)) {
             httpMethod = HttpMethod.DELETE;
         }
         HttpHeaders httpHeaders = getHead();
-        if(headMap !=null && headMap.size()>0){
-            for (String s1 :headMap.keySet()){
-                httpHeaders.set(s1,headMap.get(s1));
+        if (headMap != null && headMap.size() > 0) {
+            for (String s1 : headMap.keySet()) {
+                httpHeaders.set(s1, headMap.get(s1));
 
             }
 
