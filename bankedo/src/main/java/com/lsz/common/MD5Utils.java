@@ -3,6 +3,8 @@ package com.lsz.common;
 import sun.misc.BASE64Encoder;
 
 import java.io.UnsupportedEncodingException;
+import java.net.URLDecoder;
+import java.net.URLEncoder;
 
 /**
  * Created by Administrator on 2018/4/17 0017.
@@ -19,4 +21,24 @@ public class MD5Utils {
         }
         return null;
     }
+
+
+    public static String encodeUtf8(String str){
+        try {
+            return URLEncoder.encode(str,"utf-8");
+        } catch (UnsupportedEncodingException e) {
+
+        }
+        return null;
+    }
+    public static String decodeUtf8(String str){
+
+        try {
+            return URLDecoder.decode(str,"utf-8");
+        } catch (UnsupportedEncodingException e) {
+
+        }
+        return null;
+    }
+
 }

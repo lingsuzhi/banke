@@ -16,7 +16,7 @@
 <div  >
 
 
-    <div class="layui-side layui-bg-black kit-side">
+    <div class="layui-side layui-bg-black kit-side" style="width: 220px">
         <div class="layui-side-scroll">
             <div class="kit-side-fold"><i class="fa fa-navicon" aria-hidden="true"></i></div>
             <!-- 左侧导航区域（可配合layui已有的垂直导航） -->

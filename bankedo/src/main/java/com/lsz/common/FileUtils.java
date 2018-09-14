@@ -13,18 +13,19 @@ import static com.google.common.base.Preconditions.checkArgument;
  */
 public class FileUtils {
     public static String FileUTF8ToStr(File file){
-
+        if (file.isDirectory()) {
+            return null;
+        }
         FileInputStream fileInputStream = null;
         InputStreamReader inputStreamReader = null;
         try {
-              fileInputStream = new FileInputStream(file);
-            inputStreamReader= new InputStreamReader(fileInputStream,"utf-8");
-          //  BufferedReader br = new BufferedReader(inputStreamReader);
+            fileInputStream = new FileInputStream(file);
+            inputStreamReader = new InputStreamReader(fileInputStream, "utf-8");
+            //  BufferedReader br = new BufferedReader(inputStreamReader);
 
-            StringBuffer strBuf=new StringBuffer();
-            while(inputStreamReader.ready())
-            {
-                strBuf.append((char)inputStreamReader.read());
+            StringBuffer strBuf = new StringBuffer();
+            while (inputStreamReader.ready()) {
+                strBuf.append((char) inputStreamReader.read());
             }
             return strBuf.toString();
         } catch (FileNotFoundException e) {

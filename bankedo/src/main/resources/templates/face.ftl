@@ -64,7 +64,7 @@
 
             </fieldset>
             <div>参数</div>
-            <textarea id="sendtxt" style="width:98%;height:600px">${(obj.parameter)!}</textarea>
+            <textarea id="sendtxt" style="width:98%;height:600px">${(obj.parameterRem)!}</textarea>
 
 
         </div>

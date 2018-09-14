@@ -8,10 +8,8 @@ import com.lsz.model.bo.face.SavePostBO;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
-import sun.misc.BASE64Decoder;
 
 import java.io.File;
-import java.io.IOException;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -22,13 +20,31 @@ import java.util.List;
 @Slf4j
 public class SaveFacesService {
     public static final String FileDirP = "d:\\post";
-    public static final String FilePath = FileDirP + File.separator + "defautl";
+    public static final String FilePath = FileDirP + File.separator;
 
     public String saveDo(SavePostBO savePostBO) {
-        checkFilePath(FilePath);
+        return saveDo(savePostBO, "Default");
+    }
+
+    public String saveDo(SavePostBO savePostBO, String dirName) {
+        if (StringUtils.isEmpty(savePostBO.getName())) {
+            log.info("saveDo异常 name不能为空");
+            return "";
+        }
+        savePostBO.setName(savePostBO.getName().replace("*", "")
+                .replace("/", "")
+                .replace("\\", "")
+                .replace("\"", "")
+                .replace(":", "")
+                .replace("?", "")
+                .replace("|", "")
+                .replace("<", "")
+                .replace(">", ""));
+        String path = FilePath + dirName;
+        checkFilePath(path);
         String json = JSONObject.toJSONString(savePostBO);
         String name = savePostBO.getName();
-        String fileName = FilePath + File.separator + name + ".json";
+        String fileName = path + File.separator + name + ".json";
         FileUtils.strToFileUTF8(fileName, json);
         return "ok";
     }
@@ -44,12 +60,7 @@ public class SaveFacesService {
     }
 
     public SavePostBO openFile(String fileStr) {
-        final BASE64Decoder decoder = new BASE64Decoder();
-        try {
-            fileStr = new String(decoder.decodeBuffer(fileStr), "UTF-8");
-        } catch (IOException e) {
-            log.info("错误: {}", e);
-        }
+        fileStr = MD5Utils.decodeUtf8(fileStr);
         File file = new File(FileDirP + File.separator + fileStr);
         if (file.exists()) {
             String fileS = FileUtils.FileUTF8ToStr(file);
@@ -78,31 +89,37 @@ public class SaveFacesService {
         }
         return str;
     }
-    public SavePostBO getFileJsonPostBO(String name){
+
+    public SavePostBO getFileJsonPostBO(String name) {
         String str = getFileJson(name);
-        if(StringUtils.isEmpty(str)){
+        if (StringUtils.isEmpty(str)) {
             return null;
         }
-        SavePostBO savePostBO = JSONObject.parseObject(str,SavePostBO.class);
-        return  savePostBO;
+        SavePostBO savePostBO = JSONObject.parseObject(str, SavePostBO.class);
+        return savePostBO;
     }
+
     public List<LayuiNavbarBO> getNavbar() {
         File dir = new File(FileDirP);
         List<LayuiNavbarBO> list = new LinkedList<>();
         File[] files = dir.listFiles();
-        if (files == null) return null;
+        if (files == null || files.length == 0) {
+            File tmpFile = new File(FileDirP + File.separator + "Default");
+            tmpFile.mkdir();
+            return getNavbar();
+        }
         int id = 0;
         boolean dirB1 = true;
         for (File file : files) {
             id++;
             LayuiNavbarBO layuiNavbarBO = new LayuiNavbarBO();
             if (file.isDirectory()) {
-                layuiNavbarBO.setSpread(true);
+                layuiNavbarBO.setSpread(false);
                 layuiNavbarBO.setTitle(file.getName());
                 layuiNavbarBO.setIcon("fa-cubes");
                 layuiNavbarBO.setId(String.valueOf(id));
                 if (dirB1) {
-                    layuiNavbarBO.setSpread(true);
+                    layuiNavbarBO.setSpread(false);
                     dirB1 = !dirB1;
                 }
                 File[] files2 = file.listFiles();
@@ -116,7 +133,7 @@ public class SaveFacesService {
                         String fileStr = file.getName() + File.separator + file2.getName();
 
 
-                        layuiNavbarBO2.setUrl("face/opendo?fileStr=" + MD5Utils.base64(fileStr));
+                        layuiNavbarBO2.setUrl("face/opendo?fileStr=" + MD5Utils.encodeUtf8(fileStr));
                         layuiNavbarBO2.setSpread(true);
                         layuiNavbarBO2.setTitleEx(file2.getName());
                         layuiNavbarBO2.setIcon("fa-stop-circle");
@@ -127,7 +144,7 @@ public class SaveFacesService {
                 }
 
             } else {
-                layuiNavbarBO.setUrl("face/opendo?fileStr=" + MD5Utils.base64(file.getName()));
+                layuiNavbarBO.setUrl("face/opendo?fileStr=" + MD5Utils.encodeUtf8(file.getName()));
                 layuiNavbarBO.setSpread(true);
                 layuiNavbarBO.setTitleEx(file.getName());
                 layuiNavbarBO.setIcon("fa-stop-circle");
@@ -137,6 +154,178 @@ public class SaveFacesService {
 
             list.add(layuiNavbarBO);
         }
+        //把Default目录 放到最前面 并且状态改为打开
+        if (list != null && list.size() > 0) {
+            for (LayuiNavbarBO layuiNavbarBO : list) {
+                if ("Default".equals(layuiNavbarBO.getTitle())) {
+                    list.remove(layuiNavbarBO);
+                    layuiNavbarBO.setSpread(true);
+                    list.add(0, layuiNavbarBO);
+                    break;
+                }
+            }
+
+        }
+
         return list;
+    }
+
+    public void batchGenerate(String path) {
+        File dir = new File(path);
+        File[] files = dir.listFiles();
+        if (files == null) return;
+        //对文件进行循环遍历
+        for (File file : files) {
+            doJavaFile(file);
+        }
+    }
+
+    private void doJavaFile(File file) {
+        String className = file.getName();
+        className = className.replace(".java", "");
+        String tmpPath = FileDirP + File.separator + className;
+        //如果目录存在 则删除
+        File dir = new File(tmpPath);
+        if (dir.exists()) {
+            deleteDir(dir);
+        }
+        dir.mkdir();//创建文件夹
+        String fileStr = FileUtils.FileUTF8ToStr(file);
+        if (StringUtils.isEmpty(fileStr)) return;
+        final String keyVal = "Mapping(";
+        int mappingPos1 = fileStr.indexOf(keyVal);
+        if (mappingPos1 == -1) return;
+        //原理：第一个 mapping 后面第一个引号的内容 就是控制器路径
+        String classPathValue = getYinhao(fileStr, mappingPos1);
+
+        int mapPos = mappingPos1 + keyVal.length();
+        while (true) {
+            //循环往下找 mapping
+            int tmpMapPos = fileStr.indexOf(keyVal, mapPos);
+            if (tmpMapPos == -1) {
+                //找不到 说明没了
+                break;
+            }
+            mapPos = tmpMapPos + keyVal.length();
+            SavePostBO savePostBO = doJavaFileEx(fileStr, tmpMapPos);
+            if (savePostBO != null) {
+                savePostBO.setUrl("http://pxy-disp-sit2.banketech" + classPathValue + savePostBO.getUrl());
+                saveDo(savePostBO, className);
+            }
+        }
+
+    }
+
+    private static int findStrLast(String str, int pos, String findStr) {
+        return str.substring(0, pos).lastIndexOf(findStr);
+    }
+
+    /**
+     * @param fileStr
+     * @param pos     mapping 的位置
+     * @return
+     */
+    private SavePostBO doJavaFileEx(String fileStr, int pos) {
+        SavePostBO savePostBO = new SavePostBO();
+        String url = getYinhao(fileStr, pos);
+        savePostBO.setUrl(url);
+        savePostBO.setMethod("GET");
+        //获取这一行的值
+        String rowStr = getEnterRow(fileStr, pos);
+        if (rowStr != null) {
+            if (rowStr.contains("RequestMethod.POST") || rowStr.contains("PostMapping")) {
+                savePostBO.setMethod("POST");
+            }
+        }
+        //找注释
+        int pos1 = findStrLast(fileStr, pos, "/*");
+        int pos2 = findStrLast(fileStr, pos, "*/");
+        if (pos1 != -1 && pos2 != -1) {
+            String zhujieStr = fileStr.substring(pos1, pos2);
+            String[] sArr = zhujieStr.split("\r\n");
+            if (sArr != null) {
+                String paramS = "";
+                String returnS = "";
+                String nameS = "";
+                boolean tmpNameB = true;
+                for (int i = 1; i < sArr.length - 1; i++) {
+                    //第一行 最后一行 不要
+                    String tmpS = sArr[i];
+                    int paramPos = tmpS.indexOf("@param");
+                    if (paramPos != -1) {
+                        String paramStr = tmpS.substring(paramPos + 6).trim();
+                        //第一个空格前面是 参数名 后面是 中文注释
+                        int kgPos = paramStr.indexOf(" ");
+                        if (kgPos != -1) {
+                            String paramName = paramStr.substring(0, kgPos);
+                            String paramRem = paramStr.substring(kgPos + 1);
+                            paramS += "参数名:" + paramName.trim() + "        说明：" + paramRem.trim() + "\r\n";
+                        }
+                        tmpNameB = false;
+                        continue;
+                    }
+                    int returnPos = tmpS.indexOf("@return");
+                    if (returnPos != -1) {
+                        String returnStr = tmpS.substring(returnPos + 7);
+
+                        returnS = returnStr.trim();
+                        tmpNameB = false;
+                        continue;
+                    }
+                    if (tmpNameB) {
+                        nameS += tmpS.replace("* ", "").replace("\t", "").trim();
+
+                    }
+
+                }
+                savePostBO.setParameterRem(paramS);
+                savePostBO.setReturnStr(returnS);
+                savePostBO.setName(nameS);
+            }
+        }
+        return savePostBO;
+    }
+
+    /**
+     * 返回指定位置后面 第一个 引号 内的值
+     *
+     * @param str
+     * @param pos
+     * @return
+     */
+    private static String getYinhao(String str, int pos) {
+        int pos1 = str.indexOf("\"", pos);
+        if (pos1 == -1) return "";
+        int pos2 = str.indexOf("\"", pos1 + 1);
+        return str.substring(pos1 + 1, pos2);
+    }
+
+    /**
+     * 获取这一行的值
+     *
+     * @param str
+     * @param pos
+     * @return
+     */
+    private static String getEnterRow(String str, int pos) {
+        int pos1 = findStrLast(str, pos, "\r\n");
+        if (pos1 == -1) return "";
+        int pos2 = str.indexOf("\r\n", pos);
+        return str.substring(pos1 + 2, pos2);
+    }
+
+    private static boolean deleteDir(File dir) {
+        if (dir.isDirectory()) {
+            String[] children = dir.list();
+            //递归删除目录中的子目录下
+            for (int i = 0; i < children.length; i++) {
+                boolean success = deleteDir(new File(dir, children[i]));
+                if (!success) {
+                    return false;
+                }
+            }
+        }
+        // 目录此时为空，可以删除
+        return dir.delete();
     }
 }

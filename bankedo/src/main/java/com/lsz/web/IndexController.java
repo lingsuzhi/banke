@@ -29,7 +29,7 @@ public class IndexController {
 
     @RequestMapping("/main.htm")
     public String mainhtm() {
-        return "face";
+        return "main";
     }
 
     @RequestMapping("/datas/navbar1.json")

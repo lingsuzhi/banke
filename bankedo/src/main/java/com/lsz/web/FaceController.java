@@ -159,5 +159,17 @@ public class FaceController {
         }
     }
 
-
+    /**
+     * 批量生成
+     *
+     * @param map
+     * @return
+     */
+    @PostMapping("/batchGenerate")
+    @ResponseBody
+    public ResponseInfo<String> batchGenerate(@RequestBody Map<String,String> map) {
+        String path  = map.get("path");
+        saveFacesService.batchGenerate(path);
+        return ResponseInfo.success("成功");
+    }
 }
