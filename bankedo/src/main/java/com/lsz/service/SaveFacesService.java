@@ -206,8 +206,8 @@ public class SaveFacesService {
                 //找不到 说明没了
                 break;
             }
+            SavePostBO savePostBO = doJavaFileEx(fileStr, tmpMapPos,mapPos);
             mapPos = tmpMapPos + keyVal.length();
-            SavePostBO savePostBO = doJavaFileEx(fileStr, tmpMapPos);
             if (savePostBO != null) {
                 savePostBO.setUrl("http://pxy-disp-sit2.banketech" + classPathValue + savePostBO.getUrl());
                 saveDo(savePostBO, className);
@@ -223,9 +223,10 @@ public class SaveFacesService {
     /**
      * @param fileStr
      * @param pos     mapping 的位置
+     *  @param leftPos 不能超过的位置
      * @return
      */
-    private SavePostBO doJavaFileEx(String fileStr, int pos) {
+    private SavePostBO doJavaFileEx(String fileStr, int pos,int leftPos) {
         SavePostBO savePostBO = new SavePostBO();
         String url = getYinhao(fileStr, pos);
         savePostBO.setUrl(url);
@@ -240,7 +241,7 @@ public class SaveFacesService {
         //找注释
         int pos1 = findStrLast(fileStr, pos, "/*");
         int pos2 = findStrLast(fileStr, pos, "*/");
-        if (pos1 != -1 && pos2 != -1) {
+        if (pos1 != -1 && pos2 != -1 && pos1>leftPos) {
             String zhujieStr = fileStr.substring(pos1, pos2);
             String[] sArr = zhujieStr.split("\r\n");
             if (sArr != null) {

@@ -22,11 +22,12 @@ public class IndexController {
 
     @RequestMapping("/index.php")
     public String index(Model model) {
-
-
         return "index";
     }
-
+    @RequestMapping("/test1.php")
+    public String test1(Model model) {
+        return "test1";
+    }
     @RequestMapping("/main.htm")
     public String mainhtm() {
         return "main";
