@@ -14,9 +14,17 @@
 
 <body class="kit-theme">
 <div  >
+    <div class="layui-layout layui-layout-admin">
+    <div class="layui-header">
+        <div class="layui-logo">API文档</div>
+        <!-- 头部区域（可配合layui已有的水平导航） -->
+        <ul class="layui-nav layui-layout-left">
+            ${(headMenu)!}
+        </ul>
 
+    </div>
 
-    <div class="layui-side layui-bg-black kit-side" style="width: 220px">
+    <div class="layui-side layui-bg-black kit-side" >
         <div class="layui-side-scroll">
             <div class="kit-side-fold"><i class="fa fa-navicon" aria-hidden="true"></i></div>
             <!-- 左侧导航区域（可配合layui已有的垂直导航） -->
@@ -33,7 +41,7 @@
         </div>
     </div>
 
-
+    </div>
 </div>
 <!-- <script type="text/javascript">
     var cnzz_protocol = (("https:" == document.location.protocol) ? " https://" : " http://");

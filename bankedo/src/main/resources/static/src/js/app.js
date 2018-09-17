@@ -27,6 +27,15 @@ layui.define(['element', 'nprogress', 'form', 'table', 'loader', 'tab', 'navbar'
         config: {
             type: 'iframe'
         },
+        funSetMenu:function(name){
+            navbar.set({
+                remote: {
+                    url: '/datas/navbar1?dirName=' + name
+                }
+            }).render(function(data) {
+                tab.tabAdd(data);
+            });
+        },
         set: function(options) {
             var that = this;
             $.extend(true, that.config, options);
@@ -95,7 +104,7 @@ layui.define(['element', 'nprogress', 'form', 'table', 'loader', 'tab', 'navbar'
                 // navbar加载方式二，设置远程地址加载
                 navbar.set({
                     remote: {
-                        url: '/datas/navbar1.json'
+                        url: '/datas/navbar1?dirName=Default'
                     }
                 }).render(function(data) {
                     tab.tabAdd(data);
@@ -137,6 +146,7 @@ layui.define(['element', 'nprogress', 'form', 'table', 'loader', 'tab', 'navbar'
                             url: '/datas/onelevel1.json' //远程地址
                         },
                         onClicked: function(id) {
+                            debugger
                             switch (id) {
                                 case 1:
                                     navbar.set({

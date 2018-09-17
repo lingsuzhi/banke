@@ -6,9 +6,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Created by ex-lingsuzhi on 2018/3/20.
@@ -22,6 +25,7 @@ public class IndexController {
 
     @RequestMapping("/index.php")
     public String index(Model model) {
+        model.addAttribute("headMenu",saveFacesService.getHeadMenu());
         return "index";
     }
     @RequestMapping("/test1.php")
@@ -33,11 +37,11 @@ public class IndexController {
         return "main";
     }
 
-    @RequestMapping("/datas/navbar1.json")
+    @RequestMapping("/datas/navbar1")
     @ResponseBody
-    public List<LayuiNavbarBO> navbar1() {
+    public List<LayuiNavbarBO> navbar1(@RequestParam String dirName) {
 
-        return saveFacesService.getNavbar();
+        return saveFacesService.getNavbar(dirName);
 //        List<LayuiNavbarBO> list = new ArrayList<>();
 //
 //        LayuiNavbarBO layuiNavbarBO = new LayuiNavbarBO();

@@ -10,6 +10,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
 import java.io.File;
+import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -22,6 +23,57 @@ public class SaveFacesService {
     public static final String FileDirP = "d:\\post";
     public static final String FilePath = FileDirP + File.separator;
 
+    public String getHeadMenu(){
+//          <li class="layui-nav-item"><a href="">控制台</a></li>
+//            <li class="layui-nav-item"><a href="">商品管理</a></li>
+//            <li class="layui-nav-item"><a href="">用户</a></li>
+//            <li class="layui-nav-item">
+//                <a href="javascript:;">其它系统</a>
+//                <dl class="layui-nav-child">
+//                    <dd><a href="">邮件管理</a></dd>
+//                    <dd><a href="">消息管理</a></dd>
+//                    <dd><a href="">授权管理</a></dd>
+//                </dl>
+//            </li>
+        String returnStr = "";
+        File file = new File(FileDirP);
+        if(!file.exists()){
+            return returnStr;
+        }
+        File[] files = file.listFiles();
+        if(files == null){
+            return returnStr;
+        }
+        List<String> list = new ArrayList();
+        for (File f:files             ) {
+            if("Default".equals(f.getName())){
+                continue;
+            }
+            list.add(f.getName());
+        }
+        for(int i = 0;i<10;i++){
+            if(i>=list.size()){
+                break;
+            }
+            String name = list.get(i);
+            returnStr += "<li class=\"layui-nav-item\"><a href=\"javascript:layui.app.funSetMenu('" + name + "')" +  "\">" + name + "</a></li>\r\n";
+        }
+        if(list.size()>10){
+            returnStr += "<li class=\"layui-nav-item\">";
+            returnStr += "<a href=\"javascript:;\">其它系统</a>";
+            returnStr += "<dl class=\"layui-nav-child\">";
+            for(int i = 10;i<500;i++) {
+                if(i>=list.size()){
+                    break;
+                }
+                String name = list.get(i);
+                returnStr += "<dd><a href=\"javascript:layui.app.funSetMenu('" + name + "')" +  "\">" + name + "</a></dd>\r\n";
+            }
+            returnStr += "</dl>";
+            returnStr += "</li>";
+        }
+        return returnStr;
+    }
     public String saveDo(SavePostBO savePostBO) {
         return saveDo(savePostBO, "Default");
     }
@@ -99,14 +151,15 @@ public class SaveFacesService {
         return savePostBO;
     }
 
-    public List<LayuiNavbarBO> getNavbar() {
-        File dir = new File(FileDirP);
+    public List<LayuiNavbarBO> getNavbar(String dirName) {
+        File dir = new File(FileDirP + File.separator + dirName);
+        if(!dir.exists()){
+            return new LinkedList<>();
+        }
         List<LayuiNavbarBO> list = new LinkedList<>();
         File[] files = dir.listFiles();
         if (files == null || files.length == 0) {
-            File tmpFile = new File(FileDirP + File.separator + "Default");
-            tmpFile.mkdir();
-            return getNavbar();
+            return new LinkedList<>();
         }
         int id = 0;
         boolean dirB1 = true;
@@ -328,5 +381,37 @@ public class SaveFacesService {
         }
         // 目录此时为空，可以删除
         return dir.delete();
+    }
+
+    public static void main(String[] args) {
+        String tmp1 ="";
+      traverseFolder2("D:\\source\\ADT-jpush");
+        System.out.println(tmps);
+    }
+    private  static  String tmps="";
+    public static void traverseFolder2(String path) {
+
+        File file = new File(path);
+        if (file.exists()) {
+            File[] files = file.listFiles();
+            if (null == files || files.length == 0) {
+//                System.out.println("文件夹是空的!");
+                return ;
+            } else {
+                for (File file2 : files) {
+                    if (file2.isDirectory()) {
+//                        System.out.println("文件夹:" + file2.getAbsolutePath());
+                        if("api".equals(file2.getName())){
+                            tmps = file2.getPath();
+                        }
+                        if("build".equals(file2.getName())){
+                            return;
+                        }
+                        traverseFolder2(file2.getAbsolutePath());
+                    }
+                }
+            }
+        }
+        return  ;
     }
 }
