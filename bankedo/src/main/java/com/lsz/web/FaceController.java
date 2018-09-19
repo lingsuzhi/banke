@@ -4,6 +4,7 @@ import com.lsz.common.MSWordPoi4;
 import com.lsz.common.SoaConnectionFactory;
 import com.lsz.common.soa.ResponseInfo;
 import com.lsz.model.bo.face.FacePostBO;
+import com.lsz.model.bo.face.ParameBO;
 import com.lsz.model.bo.face.SavePostBO;
 import com.lsz.service.SaveFacesService;
 import org.slf4j.Logger;
@@ -21,9 +22,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.net.URLEncoder;
-import java.util.Enumeration;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 /**
  * Created by ex-lingsuzhi on 2018/3/20.
@@ -63,11 +62,31 @@ public class FaceController {
      * @return
      */
     @RequestMapping("/opendo")
-    public String opendo(@RequestParam String fileStr, Model model) {
+    public String opendo(@RequestParam String fileStr,@RequestParam String dirName, Model model) {
 
-        SavePostBO savePostBO = saveFacesService.openFile(fileStr);
+        SavePostBO savePostBO = saveFacesService.openFile(fileStr,dirName);
         model.addAttribute("obj", savePostBO);
-        return "face";
+
+        String param =  savePostBO.getParameterRem();
+        List<ParameBO> list = new ArrayList();
+        if(!StringUtils.isEmpty(param)){
+            String[] sArr = param.split("\r\n");
+            for (String s :sArr){
+                String[] colArr = s.split("\t\t");
+                if(colArr.length>=3){
+                    ParameBO parameBO = new ParameBO(colArr[0],colArr[1],colArr[2],"");
+                    if(colArr.length>3){
+                        parameBO.setParameRem(colArr[3]);
+                    }
+                    list.add(parameBO);
+                }
+            }
+        }
+        if(list.size()>0) {
+            model.addAttribute("parameList", list);
+        }
+
+        return "faceDoc";
     }
 
     @PostMapping("/facetest")
@@ -169,7 +188,7 @@ public class FaceController {
     @ResponseBody
     public ResponseInfo<String> batchGenerate(@RequestBody Map<String,String> map) {
         String path  = map.get("path");
-        saveFacesService.batchGenerate(path);
+        saveFacesService.batchGenerateDo(path);
         return ResponseInfo.success("成功");
     }
 }

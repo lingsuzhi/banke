@@ -20,6 +20,28 @@ layui.define(['element', 'nprogress', 'form', 'table', 'loader', 'tab', 'navbar'
         _componentPath = 'components/',
         spa = layui.spa;
     tab = layui.tab
+    function getCookie(c_name)
+    {
+        if (document.cookie.length>0)
+        {
+            c_start=document.cookie.indexOf(c_name + "=")
+            if (c_start!=-1)
+            {
+                c_start=c_start + c_name.length+1
+                c_end=document.cookie.indexOf(";",c_start)
+                if (c_end==-1) c_end=document.cookie.length
+                return unescape(document.cookie.substring(c_start,c_end))
+            }
+        }
+        return ""
+    }
+    function setCookie(c_name,value,expiredays)
+    {
+        var exdate=new Date()
+        exdate.setDate(exdate.getDate()+expiredays)
+        document.cookie=c_name+ "=" +escape(value)+
+            ((expiredays==null) ? "" : ";expires="+exdate.toGMTString())
+    }
     var app = {
         hello: function(str) {
             layer.alert('Hello ' + (str || 'test'));
@@ -28,6 +50,7 @@ layui.define(['element', 'nprogress', 'form', 'table', 'loader', 'tab', 'navbar'
             type: 'iframe'
         },
         funSetMenu:function(name){
+            setCookie("c_dirName",name,7);
             navbar.set({
                 remote: {
                     url: '/datas/navbar1?dirName=' + name
@@ -102,9 +125,15 @@ layui.define(['element', 'nprogress', 'form', 'table', 'loader', 'tab', 'navbar'
                 //     tab.tabAdd(data);
                 // });
                 // navbar加载方式二，设置远程地址加载
+                var dirName = getCookie("c_dirName");
+                if(dirName){
+
+                }else{
+                    dirName = "Default";
+                }
                 navbar.set({
                     remote: {
-                        url: '/datas/navbar1?dirName=Default'
+                        url: '/datas/navbar1?dirName=' +dirName
                     }
                 }).render(function(data) {
                     tab.tabAdd(data);

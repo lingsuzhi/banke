@@ -7,7 +7,7 @@
 </head>
 <body>
 <div>
-    路径：<input type="text" STYLE="width: 300px" id="txtPath" value="D:\source\DSP-config\server\src\main\java\com\banke\dsp\config\api">
+    路径：<input type="text" STYLE="width: 300px" id="txtPath" value="D:\source">
     <input type="button" id="btnPL" value="批量生成">
 </div>
 </body>
