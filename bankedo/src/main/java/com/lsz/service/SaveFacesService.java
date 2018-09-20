@@ -20,7 +20,15 @@ import java.util.List;
 @Service
 @Slf4j
 public class SaveFacesService {
-    public static final String FileDirP = "d:\\post";
+
+    public static String FileDirP = "d:\\post";
+
+    static {
+        if (File.separator.equals("/")) {
+            FilePathP = "post";
+        }
+    }
+
     private static String FilePathP = FileDirP;
 
     public String getHeadMenu() {
@@ -136,7 +144,7 @@ public class SaveFacesService {
 
     public String getFileJson(String name) {
         String str = "";
-        File file = new File(FileDirP + File.separator + name + ".json");
+        File file = new File(FileDirP + File.separator + name );
         if (file.exists()) {
             str = FileUtils.FileUTF8ToStr(file);
         }
@@ -228,6 +236,9 @@ public class SaveFacesService {
 
         }
 
+        if (list.size() == 0) {
+            list.add(new LayuiNavbarBO());
+        }
         return list;
     }
 
@@ -393,7 +404,7 @@ public class SaveFacesService {
                 savePostBO.setParameterRem(paramStr);
                 savePostBO.setReturnStr(returnS);
                 if (!StringUtils.isEmpty(nameS)) {
-                    if ("*".equals(nameS.substring(nameS.length()-1))) {
+                    if ("*".equals(nameS.substring(nameS.length() - 1))) {
                         nameS = nameS.substring(0, nameS.length() - 1);
                     }
                 }
@@ -551,6 +562,10 @@ public class SaveFacesService {
                         if ("api".equals(file2.getName())) {
                             sFindPath = file2.getPath();
                         }
+                        if ("mobile".equals(file2.getName())) {
+                            return;
+                        }
+
                         if (!"build".equals(file2.getName())) {
                             traverseFolder(file2.getAbsolutePath());
                         }

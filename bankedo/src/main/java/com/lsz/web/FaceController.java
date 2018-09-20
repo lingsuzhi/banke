@@ -1,5 +1,6 @@
 package com.lsz.web;
 
+import com.lsz.common.MD5Utils;
 import com.lsz.common.MSWordPoi4;
 import com.lsz.common.SoaConnectionFactory;
 import com.lsz.common.soa.ResponseInfo;
@@ -19,6 +20,7 @@ import org.springframework.web.bind.annotation.*;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.ByteArrayOutputStream;
+import java.io.File;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.net.URLEncoder;
@@ -86,6 +88,7 @@ public class FaceController {
             model.addAttribute("parameList", list);
         }
 
+        model.addAttribute("pathName",MD5Utils.encodeUtf8(dirName +  File.separator  +  fileStr));
         return "faceDoc";
     }
 
@@ -132,7 +135,7 @@ public class FaceController {
     @RequestMapping("/docdo")
     public void docdo(String name, HttpServletResponse response) {
         if (!StringUtils.isEmpty(name)) {
-            SavePostBO savePostBO = saveFacesService.getFileJsonPostBO(name);
+            SavePostBO savePostBO = saveFacesService.getFileJsonPostBO(MD5Utils.decodeUtf8(name));
             if (savePostBO == null) {
                 return;
             }

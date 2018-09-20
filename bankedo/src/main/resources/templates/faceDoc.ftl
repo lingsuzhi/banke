@@ -19,10 +19,16 @@
  </style>
 <body>
 <form class="layui-form" action="">
-<div style="margin-top: 50px ; margin-left: 60px">
+<div style="margin-top: 50px ; margin-left: 60px;margin-right: 30px">
     <div>
+
         <h1>${(obj.name)!}<h1>
+            <div align="right">
+                <input type="button" style="font-size: 15px" id="docbtn" value="接口文档"/>
+                <input type="hidden" id="name"  value="${(pathName)!}"/>
+            </div>
             <hr class="layui-bg-gray">
+
     </div>
     <div>
         <h2>简要描述</h2>
@@ -70,7 +76,7 @@
                 <#list parameList as listObj>
                 <tr>
                     <td>${(listObj.parameName)!}</td>
-                    <td>  <input type="checkbox" name="like[write]" title="必选" <#if listObj.parameRequired?? && listObj.parameRequired=='true'>checked</#if>></td>
+                    <td>  <input type="checkbox"  name="like[write]" title="必选" <#if listObj.parameRequired?? && listObj.parameRequired=='true'>checked</#if>></td>
                     <td>${(listObj.parameType)!}</td>
                     <td>${(listObj.parameRem)!}</td>
                     </tr>
@@ -108,6 +114,10 @@
             layer.msg(JSON.stringify(data.field));
             return false;
         });
+    });
+    $("#docbtn").click(function () {
+        window.location.href = "/face/docdo" + "?name=" + $("#name").val();
+        //    $.get("/face/docdo" + "?name=" + $("#name").val());
     });
 </script>
 

@@ -16,7 +16,7 @@
 <div  >
     <div class="layui-layout layui-layout-admin">
     <div class="layui-header">
-        <div class="layui-logo">API文档</div>
+        <div class="layui-logo">API文档 <img src="${ctx}/images/search.png" alt="搜索" width="26px" onclick="layui.app.search()"> </div>
         <!-- 头部区域（可配合layui已有的水平导航） -->
         <ul class="layui-nav layui-layout-left">
             ${(headMenu)!}

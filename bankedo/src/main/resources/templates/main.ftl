@@ -7,7 +7,7 @@
 </head>
 <body>
 <div>
-    路径：<input type="text" STYLE="width: 300px" id="txtPath" value="D:\source">
+    路径：<input type="text" STYLE="width: 300px" id="txtPath" value="/wls/api/code">
     <input type="button" id="btnPL" value="批量生成">
 </div>
 </body>

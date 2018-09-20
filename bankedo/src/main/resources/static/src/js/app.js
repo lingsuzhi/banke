@@ -46,6 +46,10 @@ layui.define(['element', 'nprogress', 'form', 'table', 'loader', 'tab', 'navbar'
         hello: function(str) {
             layer.alert('Hello ' + (str || 'test'));
         },
+        search:function(){
+            console.log(navbar);
+            navbar.search("代办");
+        },
         config: {
             type: 'iframe'
         },
