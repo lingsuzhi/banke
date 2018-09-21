@@ -38,7 +38,15 @@ public class FaceController {
     private SaveFacesService saveFacesService;
 
     @RequestMapping("/face.php")
-    public String face(Model model) {
+    public String face(@RequestParam String name,Model model) {
+        if (!StringUtils.isEmpty(name)) {
+            SavePostBO savePostBO = saveFacesService.getFileJsonPostBO(MD5Utils.decodeUtf8(name));
+            if (savePostBO == null) {
+                return null;
+            }
+            model.addAttribute("obj", savePostBO);
+            openDoEx(savePostBO,model);
+        }
         return "face";
     }
 
@@ -69,6 +77,12 @@ public class FaceController {
         SavePostBO savePostBO = saveFacesService.openFile(fileStr,dirName);
         model.addAttribute("obj", savePostBO);
 
+        openDoEx(savePostBO,model);
+
+        model.addAttribute("pathName",MD5Utils.encodeUtf8(dirName +  File.separator  +  fileStr));
+        return "faceDoc";
+    }
+    private void openDoEx( SavePostBO savePostBO ,Model model){
         String param =  savePostBO.getParameterRem();
         List<ParameBO> list = new ArrayList();
         if(!StringUtils.isEmpty(param)){
@@ -87,11 +101,7 @@ public class FaceController {
         if(list.size()>0) {
             model.addAttribute("parameList", list);
         }
-
-        model.addAttribute("pathName",MD5Utils.encodeUtf8(dirName +  File.separator  +  fileStr));
-        return "faceDoc";
     }
-
     @PostMapping("/facetest")
     @ResponseBody
     public Object facetest(HttpServletRequest request, @RequestBody Map<String, String> map) {
@@ -143,6 +153,7 @@ public class FaceController {
             map.put("${name}", savePostBO.getName());
             map.put("${url}", savePostBO.getUrl());
             map.put("${method}", savePostBO.getMethod());
+            map.put("${parameterRem}", savePostBO.getParameterRem());
 
             String head = savePostBO.getHead();
             if (!StringUtils.isEmpty(head)) {

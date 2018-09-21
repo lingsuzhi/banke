@@ -7,6 +7,7 @@ import com.lsz.model.bo.LayuiNavbarBO;
 import com.lsz.model.bo.face.SavePostBO;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
 
 import java.io.File;
@@ -21,15 +22,8 @@ import java.util.List;
 @Slf4j
 public class SaveFacesService {
 
-    public static String FileDirP = "d:\\post";
+    public static String FileDirP = "post";
 
-    static {
-        if (File.separator.equals("/")) {
-            FilePathP = "post";
-        }
-    }
-
-    private static String FilePathP = FileDirP;
 
     public String getHeadMenu() {
 //          <li class="layui-nav-item"><a href="">控制台</a></li>
@@ -101,7 +95,7 @@ public class SaveFacesService {
                 .replace("|", "")
                 .replace("<", "")
                 .replace(">", ""));
-        String path = FilePathP + File.separator + dirName;
+        String path = FileDirP + File.separator + dirName;
         checkFilePath(path);
         String json = JSONObject.toJSONString(savePostBO);
         String name = savePostBO.getName();
@@ -118,6 +112,17 @@ public class SaveFacesService {
             file.mkdirs();
         }
 
+    }
+
+    public SavePostBO openFileEx(String fileStr, String dirName) {
+        final String finalStr = "fileStr=";
+        int pos = fileStr.indexOf(finalStr);
+        if (pos == -1) return null;
+        int pos2 = fileStr.indexOf("&", pos);
+        if (pos2 < pos) {
+            pos2 = fileStr.length();
+        }
+        return openFile(fileStr.substring(pos + finalStr.length(), pos2), dirName);
     }
 
     public SavePostBO openFile(String fileStr, String dirName) {
@@ -144,7 +149,7 @@ public class SaveFacesService {
 
     public String getFileJson(String name) {
         String str = "";
-        File file = new File(FileDirP + File.separator + name );
+        File file = new File(FileDirP + File.separator + name);
         if (file.exists()) {
             str = FileUtils.FileUTF8ToStr(file);
         }
@@ -158,6 +163,80 @@ public class SaveFacesService {
         }
         SavePostBO savePostBO = JSONObject.parseObject(str, SavePostBO.class);
         return savePostBO;
+    }
+
+    public LayuiNavbarBO navbarFind(String txtUrl, String txtName, String projectName, String findUrl) {
+        List<LayuiNavbarBO> list = getNavbar(projectName);
+        if (CollectionUtils.isEmpty(list)) {
+            return null;
+        }
+
+        List<LayuiNavbarBO> tmpList = new LinkedList<>();
+        for (int fori = 0; fori < list.size(); fori++) {
+            LayuiNavbarBO layuiNavbarBO = list.get(fori);
+
+            // tmpList.add(layuiNavbarBO);
+            List<LayuiNavbarBO> childList = layuiNavbarBO.getChildren();
+            for (LayuiNavbarBO obj : childList) {
+                tmpList.add(obj);
+            }
+        }
+        List<LayuiNavbarBO> tmpList2 = null;
+        if (!StringUtils.isEmpty(findUrl)) {
+            LayuiNavbarBO tmpLayuiNavbarBO = null;
+            for (LayuiNavbarBO layuiNavbarBO : tmpList) {
+                if (tmpLayuiNavbarBO != null) {
+                    tmpList2.add(layuiNavbarBO);
+                }
+                if (findUrl.equals(layuiNavbarBO.getUrl())) {
+
+                    tmpList2 = new LinkedList<>();
+                    tmpLayuiNavbarBO = layuiNavbarBO;
+                }
+
+            }
+            if (tmpList2 != null) {
+                for (LayuiNavbarBO layuiNavbarBO : tmpList) {
+                    if (layuiNavbarBO == tmpLayuiNavbarBO) {
+                        break;
+                    }
+                    tmpList2.add(layuiNavbarBO);
+                }
+            }
+            tmpList = tmpList2;
+        }
+
+        if (tmpList.size() != 0) {
+            for (LayuiNavbarBO layuiNavbarBO : tmpList) {
+                if (!StringUtils.isEmpty(txtName)) {
+                    if (StringUtils.isEmpty(layuiNavbarBO.getTitle())) {
+                        continue;
+                    }
+                    int posName = layuiNavbarBO.getTitle().indexOf(txtName);
+                    if (posName == -1) {
+                        continue;
+                    }
+
+                }
+                if (!StringUtils.isEmpty(txtUrl)) {
+                    if (StringUtils.isEmpty(layuiNavbarBO.getUrl())) {
+                        continue;
+                    }
+                    SavePostBO savePostBO = openFileEx(layuiNavbarBO.getUrl(), projectName);
+                    if (savePostBO == null) {
+                        continue;
+                    }
+                    int posUrl = savePostBO.getUrl().indexOf(txtUrl);
+                    if (posUrl == -1) {
+                        continue;
+                    }
+
+                }
+                return layuiNavbarBO;
+
+            }
+        }
+        return null;
     }
 
     public List<LayuiNavbarBO> getNavbar(String dirName) {
@@ -176,13 +255,13 @@ public class SaveFacesService {
         int id = 0;
         boolean dirB1 = true;
         for (File file : files) {
-            id++;
+            id += 12;
             LayuiNavbarBO layuiNavbarBO = new LayuiNavbarBO();
             if (file.isDirectory()) {
                 layuiNavbarBO.setSpread(false);
                 layuiNavbarBO.setTitle(file.getName());
                 layuiNavbarBO.setIcon("fa-cubes");
-                layuiNavbarBO.setId(String.valueOf(id));
+                layuiNavbarBO.setId(dirName + String.valueOf(id));
                 if (dirB1) {
                     layuiNavbarBO.setSpread(false);
                     dirB1 = !dirB1;
@@ -206,7 +285,7 @@ public class SaveFacesService {
                         layuiNavbarBO2.setSpread(true);
                         layuiNavbarBO2.setTitleEx(file2.getName());
                         layuiNavbarBO2.setIcon("fa-stop-circle");
-                        layuiNavbarBO2.setId(String.valueOf(id));
+                        layuiNavbarBO2.setId(dirName + String.valueOf(id));
                         layuiNavbarBO.getChildren().add(layuiNavbarBO2);
                     }
 
@@ -217,7 +296,7 @@ public class SaveFacesService {
                 layuiNavbarBO.setSpread(true);
                 layuiNavbarBO.setTitleEx(file.getName());
                 layuiNavbarBO.setIcon("fa-stop-circle");
-                layuiNavbarBO.setId(String.valueOf(id));
+                layuiNavbarBO.setId(dirName + String.valueOf(id));
                 //layuiNavbarBO.setChildren(null);
             }
 
@@ -264,8 +343,8 @@ public class SaveFacesService {
             return;
         }
         log.info("正在处理项目{}", file.getName());
-        FilePathP = FileDirP + File.separator + file.getName();
-        File dir = new File(FilePathP);
+        FileDirP = FileDirP + File.separator + file.getName();
+        File dir = new File(FileDirP);
         if (dir.exists()) {
             deleteDir(dir);
         }
@@ -293,7 +372,7 @@ public class SaveFacesService {
     private void doJavaFile(File file, String projectName) {
         String className = file.getName();
         className = className.replace(".java", "");
-        String tmpPath = FilePathP + File.separator + className;
+        String tmpPath = FileDirP + File.separator + className;
         //如果目录存在 则删除
         File dir = new File(tmpPath);
         if (dir.exists()) {

@@ -6,7 +6,7 @@
  * LICENSE:MIT
  */
 var tab;
-layui.define(['element', 'nprogress', 'form', 'table', 'loader', 'tab', 'navbar', 'onelevel', 'laytpl', 'spa'], function(exports) {
+layui.define(['element', 'nprogress', 'form', 'table', 'loader', 'tab', 'navbar', 'onelevel', 'laytpl', 'spa'], function (exports) {
     var $ = layui.jquery,
         element = layui.element,
         layer = layui.layer,
@@ -20,62 +20,117 @@ layui.define(['element', 'nprogress', 'form', 'table', 'loader', 'tab', 'navbar'
         _componentPath = 'components/',
         spa = layui.spa;
     tab = layui.tab
-    function getCookie(c_name)
-    {
-        if (document.cookie.length>0)
-        {
-            c_start=document.cookie.indexOf(c_name + "=")
-            if (c_start!=-1)
-            {
-                c_start=c_start + c_name.length+1
-                c_end=document.cookie.indexOf(";",c_start)
-                if (c_end==-1) c_end=document.cookie.length
-                return unescape(document.cookie.substring(c_start,c_end))
+    function getCookie(c_name) {
+        if (document.cookie.length > 0) {
+            c_start = document.cookie.indexOf(c_name + "=")
+            if (c_start != -1) {
+                c_start = c_start + c_name.length + 1
+                c_end = document.cookie.indexOf(";", c_start)
+                if (c_end == -1) c_end = document.cookie.length
+                return unescape(document.cookie.substring(c_start, c_end))
             }
         }
         return ""
     }
-    function setCookie(c_name,value,expiredays)
-    {
-        var exdate=new Date()
-        exdate.setDate(exdate.getDate()+expiredays)
-        document.cookie=c_name+ "=" +escape(value)+
-            ((expiredays==null) ? "" : ";expires="+exdate.toGMTString())
+
+    function setCookie(c_name, value, expiredays) {
+        var exdate = new Date()
+        exdate.setDate(exdate.getDate() + expiredays)
+        document.cookie = c_name + "=" + escape(value) +
+            ((expiredays == null) ? "" : ";expires=" + exdate.toGMTString())
     }
+
     var app = {
-        hello: function(str) {
+        hello: function (str) {
             layer.alert('Hello ' + (str || 'test'));
         },
-        search:function(){
-            console.log(navbar);
-            navbar.search("代办");
+        searchBtn: function () {
+            var txtUrl = $("#txtUrl").val();
+            var txtName = $("#txtName").val();
+
+            $.get("/index/navbarFind", {
+                    txtUrl: txtUrl,
+                    txtName: txtName,
+                    projectName: app.projectName,
+                    findUrl: app.findUrl
+                },
+                function (obj) {
+                console.log( "搜索接口返回：" + obj);
+                    if(obj && obj.id){
+                        var abq = $("#aId1");
+                        if(abq.attr("data-options")){
+                            abq= $("#aId2");
+                        }
+                        if(abq.attr("data-options")){
+                            abq= $("#aId3");
+                        }
+                        if(abq.attr("data-options")){
+                            alert("就做了3个。。。")
+                            return;
+                        }
+                        if(abq){
+                            var objStr = "{url:'"+ obj.url + "',icon:'fa-stop-circle',title:'"+ obj.title +"',id:'"+ obj.id +"'}";
+                            abq.attr("data-options",objStr);
+                            app.findUrl = obj.url;
+                            abq.click();
+
+                        }
+                    }
+                });
+            layer.closeAll(); //关闭所有层
+
+
+        },
+
+        search: function () {
+//txtUrl,txtName
+            layer.open({
+                type: 1,
+                title: false,
+                closeBtn: 0,
+                shadeClose: true,
+                area: ['320px', '240px'],
+                skin: 'layer-ext-moon',//皮肤
+                content: $('#searchFrm')
+            });
+            $("#txtName").focus();
+            // $.get("/index/navbarFind", {
+            //         txtUrl:txtUrl,
+            //        txtName:txtName,
+            //        projectName:app.projectName ,
+            //        findUrl: app.findUrl},function(s){
+            //
+            // })
+
         },
         config: {
             type: 'iframe'
         },
-        funSetMenu:function(name){
-            setCookie("c_dirName",name,7);
+        findUrl: "",
+        funSetMenu: function (name) {
+            app.projectName = name;
+            setCookie("c_dirName", name, 7);
             navbar.set({
                 remote: {
                     url: '/datas/navbar1?dirName=' + name
                 }
-            }).render(function(data) {
+            }).render(function (data) {
                 tab.tabAdd(data);
             });
         },
-        set: function(options) {
+        set: function (options) {
             var that = this;
             $.extend(true, that.config, options);
             return that;
         },
-        init: function() {
+        init: function () {
             var that = this,
                 _config = that.config;
             if (_config.type === 'spa') {
-                navbar.bind(function(data) {
+                navbar.bind(function (data) {
                     spa.set({
                         // openWait: true
-                    }).render(data.url, function() {
+                    }).render(data.url, function () {
                         console.log('渲染完成..');
                     });
                 });
@@ -85,12 +140,12 @@ layui.define(['element', 'nprogress', 'form', 'table', 'loader', 'tab', 'navbar'
                     renderType: 'page',
                     mainUrl: 'table.html',
                     elem: '#container',
-                    onSwitch: function(data) { //选项卡切换时触发
+                    onSwitch: function (data) { //选项卡切换时触发
                         //console.log(data.layId); //lay-id值
                         //console.log(data.index); //得到当前Tab的所在下标
                         //console.log(data.elem); //得到当前的Tab大容器
                     },
-                    closeBefore: function(data) { //关闭选项卡之前触发
+                    closeBefore: function (data) { //关闭选项卡之前触发
                         // console.log(data);
                         // console.log(data.icon); //显示的图标
                         // console.log(data.id); //lay-id
@@ -100,7 +155,7 @@ layui.define(['element', 'nprogress', 'form', 'table', 'loader', 'tab', 'navbar'
                     }
                 }).render();
                 //navbar加载方式一，直接绑定已有的dom元素事件                
-                navbar.bind(function(data) {
+                navbar.bind(function (data) {
                     tab.tabAdd(data);
                 });
             }
@@ -110,12 +165,12 @@ layui.define(['element', 'nprogress', 'form', 'table', 'loader', 'tab', 'navbar'
                     //mainUrl: 'table.html',
                     //openWait: false,
                     elem: '#container',
-                    onSwitch: function(data) { //选项卡切换时触发
+                    onSwitch: function (data) { //选项卡切换时触发
                         //console.log(data.layId); //lay-id值
                         //console.log(data.index); //得到当前Tab的所在下标
                         //console.log(data.elem); //得到当前的Tab大容器
                     },
-                    closeBefore: function(data) { //关闭选项卡之前触发
+                    closeBefore: function (data) { //关闭选项卡之前触发
                         // console.log(data);
                         // console.log(data.icon); //显示的图标
                         // console.log(data.id); //lay-id
@@ -130,18 +185,19 @@ layui.define(['element', 'nprogress', 'form', 'table', 'loader', 'tab', 'navbar'
                 // });
                 // navbar加载方式二，设置远程地址加载
                 var dirName = getCookie("c_dirName");
-                if(dirName){
+                if (dirName) {
 
-                }else{
+                } else {
                     dirName = "Default";
                 }
-                navbar.set({
-                    remote: {
-                        url: '/datas/navbar1?dirName=' +dirName
-                    }
-                }).render(function(data) {
-                    tab.tabAdd(data);
-                });
+                // navbar.set({
+                //     remote: {
+                //         url: '/datas/navbar1?dirName=' +dirName
+                //     }
+                // }).render(function(data) {
+                //     tab.tabAdd(data);
+                // });
+                app.funSetMenu(dirName);
                 //navbar加载方式三，设置data本地数据
                 // navbar.set({
                 //     data: [{
@@ -178,15 +234,14 @@ layui.define(['element', 'nprogress', 'form', 'table', 'loader', 'tab', 'navbar'
                         remote: {
                             url: '/datas/onelevel1.json' //远程地址
                         },
-                        onClicked: function(id) {
-                            debugger
+                        onClicked: function (id) {
                             switch (id) {
                                 case 1:
                                     navbar.set({
                                         remote: {
                                             url: '/datas/navbar1.json'
                                         }
-                                    }).render(function(data) {
+                                    }).render(function (data) {
                                         tab.tabAdd(data);
                                     });
                                     break;
@@ -195,7 +250,7 @@ layui.define(['element', 'nprogress', 'form', 'table', 'loader', 'tab', 'navbar'
                                         remote: {
                                             url: '/datas/navbar2.json'
                                         }
-                                    }).render(function(data) {
+                                    }).render(function (data) {
                                         tab.tabAdd(data);
                                     });
                                     break;
@@ -224,13 +279,13 @@ layui.define(['element', 'nprogress', 'form', 'table', 'loader', 'tab', 'navbar'
                                             url: "https://www.baidu.com",
                                             spread: false
                                         }]
-                                    }).render(function(data) {
+                                    }).render(function (data) {
                                         tab.tabAdd(data);
                                     });
                                     break;
                             }
                         },
-                        renderAfter: function(elem) {
+                        renderAfter: function (elem) {
                             elem.find('li').eq(0).click(); //模拟点击第一个
                         }
                     }).render();
@@ -238,7 +293,7 @@ layui.define(['element', 'nprogress', 'form', 'table', 'loader', 'tab', 'navbar'
             }
 
             // ripple start
-            var addRippleEffect = function(e) {
+            var addRippleEffect = function (e) {
                 // console.log(e);
                 layui.stope(e)
                 var target = e.target;

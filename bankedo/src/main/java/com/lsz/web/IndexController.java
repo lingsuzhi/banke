@@ -9,9 +9,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 /**
  * Created by ex-lingsuzhi on 2018/3/20.
@@ -25,13 +23,15 @@ public class IndexController {
 
     @RequestMapping("/index.php")
     public String index(Model model) {
-        model.addAttribute("headMenu",saveFacesService.getHeadMenu());
+        model.addAttribute("headMenu", saveFacesService.getHeadMenu());
         return "index";
     }
+
     @RequestMapping("/test1.php")
     public String test1(Model model) {
         return "test1";
     }
+
     @RequestMapping("/main.htm")
     public String mainhtm() {
         return "main";
@@ -42,29 +42,21 @@ public class IndexController {
     public List<LayuiNavbarBO> navbar1(@RequestParam String dirName) {
 
         return saveFacesService.getNavbar(dirName);
-//        List<LayuiNavbarBO> list = new ArrayList<>();
-//
-//        LayuiNavbarBO layuiNavbarBO = new LayuiNavbarBO();
-//        layuiNavbarBO.setId("1");
-//        layuiNavbarBO.setIcon("fa-cubes");
-//        layuiNavbarBO.setTitle("基本元素");
-//        layuiNavbarBO.setSpread(true);
-//        list.add(layuiNavbarBO);
-//
-//        LayuiNavbarBO layuiNavbarBO3 = new LayuiNavbarBO();
-//        layuiNavbarBO3.setId("13");
-//        layuiNavbarBO3.setIcon("fa-cubes");
-//        layuiNavbarBO3.setTitle("基本元素3");
-//        layuiNavbarBO3.setUrl("www.baidu.com");
-//        layuiNavbarBO.getChildren().add(layuiNavbarBO3);
-//
-//        LayuiNavbarBO layuiNavbarBO2 = new LayuiNavbarBO();
-//        layuiNavbarBO2.setId("11");
-//        layuiNavbarBO2.setIcon("fa-cubes");
-//        layuiNavbarBO2.setTitle("基本元素1");
-//        layuiNavbarBO2.setSpread(true);
-//        list.add(layuiNavbarBO2);
-//
-//        return list;
+    }
+
+    /**
+     * 搜索功能
+     *
+     * @param txtUrl      搜索路径
+     * @param txtName     搜索名称
+     * @param projectName 项目名称
+     * @param findUrl     上一个路径
+     * @return 菜单
+     */
+    @RequestMapping("/index/navbarFind")
+    @ResponseBody
+    public LayuiNavbarBO navbarFind(
+            @RequestParam String txtUrl, @RequestParam String txtName, @RequestParam String projectName, @RequestParam String findUrl) {
+        return saveFacesService.navbarFind(txtUrl, txtName, projectName, findUrl);
     }
 }

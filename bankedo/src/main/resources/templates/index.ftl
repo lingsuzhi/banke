@@ -13,6 +13,10 @@
 </head>
 
 <body class="kit-theme">
+<a href="javascript:;"    kit-target="" id="aId1" data-options=""></a>
+<a href="javascript:;"    kit-target="" id="aId2" data-options=""></a>
+<a href="javascript:;"    kit-target="" id="aId3" data-options=""></a>
+
 <div  >
     <div class="layui-layout layui-layout-admin">
     <div class="layui-header">
@@ -88,7 +92,20 @@
                     switchSkin(skin === undefined ? 'default' : skin);
                 }();
     });
+
+
 </script>
 </body>
 
 </html>
+<div id="searchFrm" hidden>
+
+    <div style="margin-left: 30px;margin-top: 30px">
+        <h2 align="center">Search</h2>
+    <div style="margin-left: 3px;margin-top: 20px">名称：<input id="txtName" style="height: 26px"></div>
+    <div style="margin-left: 3px;margin-top: 20px">路径：<input id="txtUrl" style="height: 26px"></div>
+        <div style="margin-left: 88px;margin-top: 30px">
+    <input type="button" value="搜 索" class="layui-btn layui-btn-primary"  onclick="layui.app.searchBtn()">
+        </div>
+    </div>
+</div>

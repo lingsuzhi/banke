@@ -3,6 +3,7 @@
 <html>
 <script src="${ctx}/js/common/jquery.js"></script>
 <script src="${ctx}/js/common/common.js"></script>
+<link rel="stylesheet" href="${ctx}/plugins/layui/css/layui.css" media="all"/>
 <style>
     div {
         margin: 5px;
@@ -37,17 +38,19 @@
             <option value="Put">Put</option>
             <option value="Delete">Delete</option>
         </select>
-        &nbsp<input type="button" id="savebtn" value="保 存"/>
-        &nbsp<input type="button" id="delbtn" value="删 除"/>
-        &nbsp<input type="button" id="docbtn" value="接口文档"/>
+        &nbsp<input hidden type="button" id="savebtn" value="保 存"/>
+        &nbsp<input hidden type="button" id="delbtn" value="删 除"/>
+        &nbsp<input hidden type="button" id="docbtn" value="接口文档"/>
     </div>
     <div>
-        地址：<input id="url" style="width:600px;" value="${(obj.url)!}"/>
-        &nbsp<input type="button" id="okbtn" value="测 试"/>
+        地址：<input id="url" style="width:550px;" value="http://pxy-disp-sit2.banketech.com${(obj.url)!}"/>
+        &nbsp<input type="button" id="okbtn" class="layui-btn layui-btn-primary layui-btn-sm"  value="测 试"/>
 
     </div>
     <div style="float: left">
-        <div style="width: 600px; float: left">
+
+        <div style="width: 650px; float: left">
+            <div style="float: left"> <input id="tokenId" type="button" value="token"></div>
 
             <fieldset>
 
@@ -55,6 +58,7 @@
             <#--<textarea id="headtxt" style="width:98%;height:100px">${(obj.head)!}</textarea>-->
 
                 <div id="headField">
+
                     <div data-id="1" class="headCls">
                         key<input class="txtkey" onchange="txtkeyChange(this)">
                         val<input class="txtvalue">
@@ -64,7 +68,9 @@
 
             </fieldset>
             <div>参数</div>
-            <textarea id="sendtxt" style="width:98%;height:600px">${(obj.parameterRem)!}</textarea>
+            <textarea id="sendtxt" style="width:98%;height:600px"><#list parameList as listObj>${(listObj.parameName)!}=
+            </#list>
+             </textarea>
 
 
         </div>
@@ -330,4 +336,8 @@
 
         $.ajax(post);
     }
+    $("#tokenId").click(function(){
+        $(".txtkey").val("Authorization");
+        $(".txtvalue").val("UEBnbDFTZFhlcWhvNGtPRlRaRUhYQ0Z1");
+    })
 </script>

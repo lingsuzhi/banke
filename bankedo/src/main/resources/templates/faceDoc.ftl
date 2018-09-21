@@ -14,27 +14,34 @@
     .contextZ{
         margin-left: 26px;
         margin-top: 15px;
-        margin-bottom: 20px;
+        margin-bottom: 30px;
     }
  </style>
 <body>
 <form class="layui-form" action="">
 <div style="margin-top: 50px ; margin-left: 60px;margin-right: 30px">
-    <div>
+    <div style="float:left ; width: 80%">
 
-        <h1>${(obj.name)!}<h1>
-            <div align="right">
-                <input type="button" style="font-size: 15px" id="docbtn" value="接口文档"/>
-                <input type="hidden" id="name"  value="${(pathName)!}"/>
-            </div>
+        <h1 style="margin-bottom: 30px ; ">${(obj.name)!}<h1>
+
             <hr class="layui-bg-gray">
 
     </div>
+    <div style="float:right;">
+        <div>
+            <input type="button" class="layui-btn layui-btn-primary layui-btn-sm layui-btn-radius" id="testDobtn" value="测试接口"/>
+        </div>
+        <div>
+            <input type="button" class="layui-btn layui-btn-primary layui-btn-sm layui-btn-radius" id="docbtn" value="接口文档"/>
+        </div>
+        <input type="hidden" id="name"  value="${(pathName)!}"/>
+    </div>
+    <div style="  clear: both;"></div>
     <div>
         <h2>简要描述</h2>
         <div class="contextZ">
 
-            <h3><span class="layui-badge-dot"></span>&nbsp;&nbsp;${(obj.describe)!}接口</h3>
+            <h3><span class="layui-badge-dot"></span>&nbsp;&nbsp;${(obj.describe)!}</h3>
         </div>
     </div>
     <div>
@@ -119,6 +126,14 @@
         window.location.href = "/face/docdo" + "?name=" + $("#name").val();
         //    $.get("/face/docdo" + "?name=" + $("#name").val());
     });
+    $("#testDobtn").click(function () {
+
+        window.location.href = "/face/face.php" + "?name=" + $("#name").val();
+        //    $.get("/face/docdo" + "?name=" + $("#name").val());
+    });
+
+
+
 </script>
 
 </body>
