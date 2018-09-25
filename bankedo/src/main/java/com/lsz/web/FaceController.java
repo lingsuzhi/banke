@@ -134,7 +134,9 @@ public class FaceController {
         if (StringUtils.isEmpty(s)) {
             return "";
         }
-        return s.replace("\n", "\r\n");
+        return  s
+                .replace("false\t","否\t")
+                .replace("true\t","是\t");
     }
     /**
      * 文档
@@ -153,7 +155,7 @@ public class FaceController {
             map.put("${name}", savePostBO.getName());
             map.put("${url}", savePostBO.getUrl());
             map.put("${method}", savePostBO.getMethod());
-            map.put("${parameterRem}", savePostBO.getParameterRem());
+            map.put("${parameterRem}",wordNToRN( savePostBO.getParameterRem()));
 
             String head = savePostBO.getHead();
             if (!StringUtils.isEmpty(head)) {
@@ -161,7 +163,7 @@ public class FaceController {
             }
             map.put("${head}", head);
 
-            map.put("${parameter}", wordNToRN(savePostBO.getParameter()));
+            map.put("${parameter}",  savePostBO.getParameter());
             String returnStr = savePostBO.getReturnStr();
             if (!StringUtils.isEmpty(returnStr)) {
                 returnStr = returnStr.replace("\n", "\r\n");

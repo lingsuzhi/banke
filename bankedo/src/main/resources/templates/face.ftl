@@ -20,18 +20,18 @@
     }
 
     input {
-        height: 22px;
+        height: 28px;
     }
 
     .headCls {
         margin-bottom: 6px;
-        margin-left: 6px;
+        margin-left: 3px;
     }
 </style>
 <body>
 <div style="margin-top: 12px">
     <div>
-        名称：<input id="name" style="width:400px;" value="${(obj.name)!}"/>
+        名称：<input id="name" style="width:550px;" value="${(obj.name)!}"/>
         <select id="postSelect" style="height: 26px">
             <option value="GET">GET</option>
             <option value="POST">POST</option>
@@ -44,7 +44,7 @@
     </div>
     <div>
         地址：<input id="url" style="width:550px;" value="http://pxy-disp-sit2.banketech.com${(obj.url)!}"/>
-        &nbsp<input type="button" id="okbtn" class="layui-btn layui-btn-primary layui-btn-sm"  value="测 试"/>
+        &nbsp<input type="button" id="okbtn" class="layui-btn   layui-btn-sm"  value="测 试"/>
 
     </div>
     <div style="float: left">
@@ -68,19 +68,17 @@
 
             </fieldset>
             <div>参数</div>
-            <textarea id="sendtxt" style="width:98%;height:600px"><#list parameList as listObj>${(listObj.parameName)!}=
+            <textarea id="sendtxt" style="width:100%;height:600px"><#list parameList as listObj>${(listObj.parameName)!}=
             </#list>
              </textarea>
 
 
         </div>
         <div style="float: left">
-            <fieldset>
+            <div>返回值</div>
 
-                <legend>返回值</legend>
+                <textarea id="returntxt" style="width:600px;height:680px">${(obj.returnStr)!}</textarea>
 
-                <textarea id="returntxt" style="width:600px;height:670px">${(obj.returnStr)!}</textarea>
-            </fieldset>
         </div>
     </div>
 </div>

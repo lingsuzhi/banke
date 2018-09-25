@@ -71,31 +71,7 @@ public class MSWordPoi4 {
 
         //读取word文本内容
         Range range = hdt.getRange();
-        TableIterator tableIt = new TableIterator(range);
-        //迭代文档中的表格
-        int ii = 0;
-        while (tableIt.hasNext()) {
-            Table tb = (Table) tableIt.next();
-            ii++;
-            System.out.println("第" + ii + "个表格数据...................");
-            //迭代行，默认从0开始
-            for (int i = 0; i < tb.numRows(); i++) {
-                TableRow tr = tb.getRow(i);
-                //只读前8行，标题部分
-                if (i >= 8) break;
-                //迭代列，默认从0开始
-                for (int j = 0; j < tr.numCells(); j++) {
-                    TableCell td = tr.getCell(j);//取得单元格
-                    //取得单元格的内容
-                    for (int k = 0; k < td.numParagraphs(); k++) {
-                        Paragraph para = td.getParagraph(k);
-                        String s = para.text();
-                        System.out.println(s);
-                    } //end for
-                }   //end for
-            }   //end for
-        } //end while
-        // 替换文本内容
+           // 替换文本内容
         for (Map.Entry<String, String> entry : map.entrySet()) {
             String s = entry.getValue();
             if(s == null){

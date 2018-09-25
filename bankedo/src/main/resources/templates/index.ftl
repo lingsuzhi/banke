@@ -20,12 +20,20 @@
 <div  >
     <div class="layui-layout layui-layout-admin">
     <div class="layui-header">
-        <div class="layui-logo">API文档 <img src="${ctx}/images/search.png" alt="搜索" width="26px" onclick="layui.app.search()"> </div>
+        <div class="layui-logo"> <img src="${ctx}/images/xrk.png" class="layui-nav-img">API文档
+        </div>
         <!-- 头部区域（可配合layui已有的水平导航） -->
         <ul class="layui-nav layui-layout-left">
             ${(headMenu)!}
         </ul>
-
+        <ul class="layui-nav layui-layout-right" style="margin-right: 30px">
+            <li class="layui-nav-item">
+                <a href="javascript:;" onclick="layui.app.search()">
+                    <img src="${ctx}/images/search.png" alt="搜索" width="26px" >
+                    <span id="proName"   style="color: #bb88bb" ></span>
+                </a>
+            </li>
+        </ul>
     </div>
 
     <div class="layui-side layui-bg-black kit-side" >

@@ -108,6 +108,8 @@ layui.define(['element', 'nprogress', 'form', 'table', 'loader', 'tab', 'navbar'
         },
         findUrl: "",
         funSetMenu: function (name) {
+
+            $("#proName").html(name);
             app.projectName = name;
             setCookie("c_dirName", name, 7);
             navbar.set({

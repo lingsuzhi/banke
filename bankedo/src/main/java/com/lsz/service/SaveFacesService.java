@@ -23,7 +23,7 @@ import java.util.List;
 public class SaveFacesService {
 
     public static String FileDirP = "post";
-
+    private static String FileDirStr = "";
 
     public String getHeadMenu() {
 //          <li class="layui-nav-item"><a href="">控制台</a></li>
@@ -95,7 +95,7 @@ public class SaveFacesService {
                 .replace("|", "")
                 .replace("<", "")
                 .replace(">", ""));
-        String path = FileDirP + File.separator + dirName;
+        String path = FileDirStr + File.separator + dirName;
         checkFilePath(path);
         String json = JSONObject.toJSONString(savePostBO);
         String name = savePostBO.getName();
@@ -343,8 +343,8 @@ public class SaveFacesService {
             return;
         }
         log.info("正在处理项目{}", file.getName());
-        FileDirP = FileDirP + File.separator + file.getName();
-        File dir = new File(FileDirP);
+        FileDirStr = FileDirP + File.separator + file.getName();
+        File dir = new File(FileDirStr);
         if (dir.exists()) {
             deleteDir(dir);
         }
@@ -372,7 +372,7 @@ public class SaveFacesService {
     private void doJavaFile(File file, String projectName) {
         String className = file.getName();
         className = className.replace(".java", "");
-        String tmpPath = FileDirP + File.separator + className;
+        String tmpPath = FileDirP + File.separator + projectName + File.separator + className;
         //如果目录存在 则删除
         File dir = new File(tmpPath);
         if (dir.exists()) {
@@ -559,10 +559,14 @@ public class SaveFacesService {
             }
 
             String paramType = s.substring(posKG + 1).trim();
-            int tmpPos = s.replace(" ", "").indexOf("required=false");
-            String required = "true";
+            String required = "false";
+            int tmpPos = s.indexOf("@RequestParam");
             if (tmpPos != -1) {
-                required = "false";
+                tmpPos = s.replace(" ", "").indexOf("required=false");
+                required = "true";
+                if (tmpPos != -1) {
+                    required = "false";
+                }
             }
             String paramDec = "";
             if (paramOldArr.length > 0) {
