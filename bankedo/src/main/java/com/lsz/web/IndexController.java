@@ -1,5 +1,6 @@
 package com.lsz.web;
 
+import com.lsz.common.soa.ResponseInfo;
 import com.lsz.model.bo.LayuiNavbarBO;
 import com.lsz.service.SaveFacesService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -8,7 +9,14 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.StandardOpenOption;
 import java.util.List;
 
 /**
@@ -59,4 +67,22 @@ public class IndexController {
             @RequestParam String txtUrl, @RequestParam String txtName, @RequestParam String projectName, @RequestParam String findUrl) {
         return saveFacesService.navbarFind(txtUrl, txtName, projectName, findUrl);
     }
+
+    @RequestMapping(value = "/upload/postFile")
+    @ResponseBody
+    public ResponseInfo<?> uploadNunWidthBizId(@RequestParam("file") MultipartFile file,
+                                               @RequestParam(value = "fileName", required = false) String fileName) throws IOException {
+        if (!file.isEmpty()) {
+            Path fullPath = Paths.get(SaveFacesService.FileDirP ,"head.json");
+            File file1 = new File(fullPath.toUri());
+            if(file1.exists()){
+                file1.delete();
+            }
+            Files.write(fullPath, file.getBytes(), StandardOpenOption.CREATE);
+            return new ResponseInfo("0","成功",null);
+        } else {
+            return ResponseInfo.error(null);
+        }
+    }
+
 }

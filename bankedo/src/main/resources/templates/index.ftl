@@ -20,7 +20,7 @@
 <div  >
     <div class="layui-layout layui-layout-admin">
     <div class="layui-header">
-        <div class="layui-logo"> <img src="${ctx}/images/xrk.png" class="layui-nav-img">API文档
+        <div class="layui-logo"> <img src="${ctx}/images/xrk.png" class="layui-nav-img" style="width: 50px;height: 50px">API文档
         </div>
         <!-- 头部区域（可配合layui已有的水平导航） -->
         <ul class="layui-nav layui-layout-left">

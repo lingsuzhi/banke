@@ -37,7 +37,9 @@ public class ControllerInterceptor {
         if (objArr != null && objArr.length > 0) {
             for (Object obj : objArr) {
                 if (sb.length() > 0) sb.append(" | ");
-                sb.append(obj.toString());
+                if(obj != null){
+                    sb.append(obj.toString());
+                }
             }
 
         }

@@ -1,5 +1,6 @@
 package com.lsz.service;
 
+import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.lsz.common.FileUtils;
 import com.lsz.common.MD5Utils;
@@ -48,33 +49,115 @@ public class SaveFacesService {
         }
         List<String> list = new ArrayList();
         for (File f : files) {
-            if ("Default".equals(f.getName())) {
-                continue;
+            if (f.isDirectory()) {
+                list.add(f.getName());
             }
-            list.add(f.getName());
         }
-        for (int i = 0; i < 10; i++) {
-            if (i >= list.size()) {
-                break;
+        File fileHead = new File(FileDirP + File.separator + "head.json");
+        if (fileHead.exists()) {
+            String json = FileUtils.FileUTF8ToStr(fileHead);
+            JSONArray jsonArray = null;
+            try{
+                jsonArray = JSONObject.parseArray(json);
+
+            }catch (Exception e){
+                return null;
             }
-            String name = list.get(i);
-            returnStr += "<li class=\"layui-nav-item\"><a href=\"javascript:layui.app.funSetMenu('" + name + "')" + "\">" + name + "</a></li>\r\n";
-        }
-        if (list.size() > 10) {
-            returnStr += "<li class=\"layui-nav-item\">";
-            returnStr += "<a href=\"javascript:;\">其它系统</a>";
-            returnStr += "<dl class=\"layui-nav-child\">";
-            for (int i = 10; i < 500; i++) {
+            for (Object obj : jsonArray) {
+                if (obj instanceof String) {
+                    String name = headListDo(list, (String) obj);
+                    if (!StringUtils.isEmpty(name)) {
+                        returnStr += strDo1(name);
+                    }
+
+                } else if (obj instanceof JSONObject) {
+                    JSONObject jsonObject = (JSONObject) obj;
+                    for (Object ob : jsonObject.keySet()) {
+                        Object map = jsonObject.get(ob);
+
+
+                        if (map instanceof JSONArray) {
+                            JSONArray hashMap = (JSONArray) map;
+                            returnStr += "<li class=\"layui-nav-item\">";
+                            returnStr += "<a href=\"javascript:;\">" + ob.toString() + "</a>";
+                            returnStr += "<dl class=\"layui-nav-child\">";
+                            for (Object entry : hashMap) {
+
+                                String sVal = entry.toString();
+
+                                String name = headListDo(list, sVal);
+                                if (!StringUtils.isEmpty(name)) {
+                                    returnStr += strDo2(name);
+                                }
+
+
+                            }
+
+                            returnStr += "</dl>";
+                            returnStr += "</li>";
+                        }
+                    }
+                }
+            }
+
+            if (list.size() > 0) {
+                returnStr += "<li class=\"layui-nav-item\">";
+                returnStr += "<a href=\"javascript:;\">其它系统</a>";
+                returnStr += "<dl class=\"layui-nav-child\">";
+                for (int i = 0; i < 500; i++) {
+                    if (i >= list.size()) {
+                        break;
+                    }
+                    String name = list.get(i);
+                    returnStr += "<dd><a href=\"javascript:layui.app.funSetMenu('" + name + "')" + "\">" + name + "</a></dd>\r\n";
+                }
+                returnStr += "</dl>";
+                returnStr += "</li>";
+            }
+        } else {
+
+            for (int i = 0; i < 10; i++) {
                 if (i >= list.size()) {
                     break;
                 }
                 String name = list.get(i);
-                returnStr += "<dd><a href=\"javascript:layui.app.funSetMenu('" + name + "')" + "\">" + name + "</a></dd>\r\n";
+                returnStr += strDo1(name);
             }
-            returnStr += "</dl>";
-            returnStr += "</li>";
+            if (list.size() > 10) {
+                returnStr += "<li class=\"layui-nav-item\">";
+                returnStr += "<a href=\"javascript:;\">其它系统</a>";
+                returnStr += "<dl class=\"layui-nav-child\">";
+                for (int i = 10; i < 500; i++) {
+                    if (i >= list.size()) {
+                        break;
+                    }
+                    String name = list.get(i);
+                    returnStr += "<dd><a href=\"javascript:layui.app.funSetMenu('" + name + "')" + "\">" + name + "</a></dd>\r\n";
+                }
+                returnStr += "</dl>";
+                returnStr += "</li>";
+            }
+
         }
         return returnStr;
+    }
+
+    private String strDo2(String name) {
+        return "<dd><a href=\"javascript:layui.app.funSetMenu('" + name + "')" + "\">" + name + "</a></dd>\r\n";
+    }
+
+    private String strDo1(String name) {
+        return "<li class=\"layui-nav-item\"><a href=\"javascript:layui.app.funSetMenu('" + name + "')" + "\">" + name + "</a></li>\r\n";
+    }
+
+    private String headListDo(List<String> list, String str) {
+        for (String s : list) {
+            if (str.equals(s)) {
+                list.remove(s);
+                return s;
+            }
+        }
+        return null;
     }
 
     public String saveDo(SavePostBO savePostBO) {

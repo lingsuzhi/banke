@@ -16,7 +16,31 @@
         margin-top: 15px;
         margin-bottom: 30px;
     }
+
  </style>
+
+<style>
+    /** 右下角跳转按钮 跳转到列表 */
+    #list_note_icon
+    {
+        position: fixed;
+        bottom: 6%;
+        right: 6%;
+        z-index: 8888;
+        text-align: center;
+        width: 46px;
+        height: 46px;
+    }
+    #list_note_icon img{
+
+        width: 40px;
+    }
+#list_note_icon img:hover{
+    width: 46px;
+}
+
+
+</style>
 <body>
 <form class="layui-form" action="">
 <div style="margin-top: 50px ; margin-left: 60px;margin-right: 30px">
@@ -107,10 +131,15 @@
         </div>
     </div>
 </div>
-
-
 </form>
 
+<div id="list_note_icon" onclick="fenxiangDo()">
+    <img src="${ctx}/images/wx.png"   title="分享" alt="分享" >
+
+</div>
+
+
+</div>
 <script>
     //Demo
     layui.use('form', function(){
@@ -132,7 +161,20 @@
         //    $.get("/face/docdo" + "?name=" + $("#name").val());
     });
 
-
+    function fenxiangDo() {
+        copyUrl2(window.location.href);
+    }
+    function copyUrl2(Url2)
+    {
+        var oInput = document.createElement('input');
+        oInput.value = Url2;
+        document.body.appendChild(oInput);
+        oInput.select(); // 选择对象
+        document.execCommand("Copy"); // 执行浏览器复制命令
+        oInput.className = 'oInput';
+        oInput.style.display='none';
+        layer.msg('复制成功', {icon: 4});
+    }
 
 </script>
 
