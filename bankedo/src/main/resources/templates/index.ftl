@@ -30,7 +30,7 @@
             <li class="layui-nav-item">
                 <a href="javascript:;" onclick="layui.app.search()">
                     <img src="${ctx}/images/search.png" alt="搜索" width="26px" >
-                    <span id="proName"   style="color: #bb88bb" ></span>
+                    <span id="proName"   style="color: #009688" ></span>
                 </a>
             </li>
         </ul>

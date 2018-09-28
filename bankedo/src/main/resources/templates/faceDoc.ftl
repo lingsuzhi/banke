@@ -7,6 +7,7 @@
 <link rel="stylesheet" href="${ctx}/src/css/app.css" media="all"/>
 <link rel="stylesheet" href="${ctx}/src/css/themes/default.css" media="all" id="skin" kit-skin/>
 <script src="${ctx}/plugins/layui/layui.js"></script>
+<script src="${ctx}/js/common/jquery.qrcode.min.js"></script>
 <style>
     div {
         margin: 5px;
@@ -24,19 +25,20 @@
     #list_note_icon
     {
         position: fixed;
-        bottom: 6%;
-        right: 6%;
+        bottom: 0px;
+        right: 10px;
         z-index: 8888;
-        text-align: center;
-        width: 46px;
-        height: 46px;
+        width: 280px;
+        height: 280px;
     }
     #list_note_icon img{
-
+        position: absolute;
+        margin-left: 115px;
+        margin-top: 115px;
         width: 40px;
     }
 #list_note_icon img:hover{
-    width: 46px;
+    width: 42px;
 }
 
 
@@ -134,8 +136,8 @@
 </form>
 
 <div id="list_note_icon" onclick="fenxiangDo()">
-    <img src="${ctx}/images/wx.png"   title="分享" alt="分享" >
-
+    <img src="${ctx}/images/wx.png"  onmouseover="onmouseoverDo()" onmouseout="onmouseoutDo()" >
+    <div id="qrcode" style="display: none"></div>
 </div>
 
 
@@ -160,7 +162,13 @@
         window.location.href = "/face/face.php" + "?name=" + $("#name").val();
         //    $.get("/face/docdo" + "?name=" + $("#name").val());
     });
+    function onmouseoverDo(){
+        $("#qrcode").show();
+    }
+    function  onmouseoutDo() {
+        $("#qrcode").hide();
 
+    }
     function fenxiangDo() {
         copyUrl2(window.location.href);
     }
@@ -175,7 +183,9 @@
         oInput.style.display='none';
         layer.msg('复制成功', {icon: 4});
     }
-
+    jQuery(function(){
+        jQuery('#qrcode').qrcode(window.location.href);
+    })
 </script>
 
 </body>

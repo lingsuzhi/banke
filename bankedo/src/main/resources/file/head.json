@@ -1,0 +1,24 @@
+[  
+	{
+		"disp": ["DSP-appuser","DSP-apply","DSP-appuser","DSP-config","ADT-jpush", "PXY-disp", "PXY-wx", "WXN-dspOfficial", "DSP-gcc", "WXN-calcPages", "WXN-calc", "WXN-cha", "WXN-apply", "WXN-applyPages", "WXN-rating","ADT-wx","DSP-discovery","ENG-rule"]
+	},
+	{
+		"core": ["ADT-yqb", "BKG-calc", "CIF-clientinfo", "FTS-deduct", "FTS-pay", "ORD-order", "PDT-def", "PDT-rule", "FTS-acct"]
+	},
+	{
+		"wrk": ["ADT-disp", "ADT-dashu", "WRK-staff", "WRK-imgcheck", "WRK-credit", "WRK-booking", "WRK-confirm", "QRY-sync", "PXY-api", "WRK-witness", "WRK-entry", "QRY-list", "WRK-pages"]
+	},
+	{
+		"open": ["ADT-report", "PXY-intf", "CTS-poster", "CTS-pages", "SITE-official", "HOUSE-interface", "WEBSITE-pages", "ADT-thd"]
+	},
+	{
+		"internal": ["PXY-hack", "BKC-itsm", "BKC-checkin"]
+	},
+ 	{
+		"report": ["QRY-report"]
+	},
+
+	{
+		"common": ["MSG-mail","MSG-sms", "RES-idcard", "RES-image", "RES-seq", "RES-task", "UMS-role", "UMS-auth", "UMS-branch", "UMS-notify", "ADT-contract", "WXW-work"]
+	}
+]
