@@ -11,6 +11,7 @@ public class SavePostBO implements Serializable {
     private String parameter;
     private String head;
     private String returnStr;
+    private String returnTypeStr;
     private String name;
     private String projectName;//项目名
     /**

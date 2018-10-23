@@ -1,12 +1,11 @@
 package com.lsz.web;
 
+import com.lsz.common.HtmlUtil;
 import com.lsz.common.MD5Utils;
 import com.lsz.common.MSWordPoi4;
 import com.lsz.common.SoaConnectionFactory;
 import com.lsz.common.soa.ResponseInfo;
-import com.lsz.model.bo.face.FacePostBO;
-import com.lsz.model.bo.face.ParameBO;
-import com.lsz.model.bo.face.SavePostBO;
+import com.lsz.model.bo.face.*;
 import com.lsz.service.SaveFacesService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -14,6 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
 
@@ -45,7 +45,7 @@ public class FaceController {
                 return null;
             }
             model.addAttribute("obj", savePostBO);
-            openDoEx(savePostBO,model);
+            openDoEx(savePostBO,model,null);
         }
         return "face";
     }
@@ -72,17 +72,42 @@ public class FaceController {
      * @return
      */
     @RequestMapping("/opendo")
-    public String opendo(@RequestParam String fileStr,@RequestParam String dirName, Model model) {
+    public String opendo(@RequestParam String fileStr,@RequestParam String dirName, String type, Model model) {
+        model.addAttribute("pathName",MD5Utils.encodeUtf8(dirName +  File.separator  +  "api" +  File.separator  +  fileStr));
+        if("dto".equals(type)){
+            DtoBO dtoBO = saveFacesService.openDtoFile(fileStr,dirName,"/dto");
+            if(!CollectionUtils.isEmpty(dtoBO.getAttrList())){
+                for (DtoAttrBO dtoAttrBO : dtoBO.getAttrList()){
+                    dtoAttrBO.setTypeStr(HtmlUtil.strToHtml(dtoAttrBO.getTypeStr()));
+                }
+            }
+            model.addAttribute("obj", dtoBO);
+            return "dtoDoc";
 
-        SavePostBO savePostBO = saveFacesService.openFile(fileStr,dirName);
-        model.addAttribute("obj", savePostBO);
+        }else{
 
-        openDoEx(savePostBO,model);
+            SavePostBO savePostBO = saveFacesService.openFile(fileStr,dirName,"/api");
+            List<String> dtoList = saveFacesService.getDtoList(dirName);
+            savePostBO.setReturnTypeStr(HtmlUtil.strToHtml(savePostBO.getReturnTypeStr()));
+            model.addAttribute("obj", savePostBO);
 
-        model.addAttribute("pathName",MD5Utils.encodeUtf8(dirName +  File.separator  +  fileStr));
-        return "faceDoc";
+            if(!StringUtils.isEmpty(savePostBO.getReturnTypeStr())){
+                String tmpStr = savePostBO.getReturnTypeStr().replace("ResponseInfo","")
+                        .replace("&lt;","")
+                        .replace("&gt;","");
+                if (dtoList.contains(tmpStr)){
+                    savePostBO.setReturnTypeStr(addHtmlA(savePostBO.getReturnTypeStr(),savePostBO.getProjectName(),tmpStr));
+                }
+            }
+            openDoEx(savePostBO,model,dtoList);
+            return "faceDoc";
+        }
     }
-    private void openDoEx( SavePostBO savePostBO ,Model model){
+    private String addHtmlA(String str,String projectName,String fileStr){
+
+        return "<a class=\"myabq\" href=\"javascript:;\" target=\"_blank\" a-href=\"/face/opendo?type=dto&fileStr="+fileStr + "%5C"+fileStr+".json&dirName="+projectName+"\">" + str +"</a>";
+    }
+    private void openDoEx( SavePostBO savePostBO ,Model model,List<String> dtoList){
         String param =  savePostBO.getParameterRem();
         List<ParameBO> list = new ArrayList();
         if(!StringUtils.isEmpty(param)){
@@ -94,6 +119,10 @@ public class FaceController {
                     if(colArr.length>3){
                         parameBO.setParameRem(colArr[3]);
                     }
+                    if(!CollectionUtils.isEmpty(dtoList) && dtoList.contains(parameBO.getParameType())){
+                        parameBO.setParameType(addHtmlA(parameBO.getParameType(),savePostBO.getProjectName(),parameBO.getParameType()));
+                    }
+
                     list.add(parameBO);
                 }
             }

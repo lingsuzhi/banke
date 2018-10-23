@@ -5,6 +5,8 @@ import com.alibaba.fastjson.JSONObject;
 import com.lsz.common.FileUtils;
 import com.lsz.common.MD5Utils;
 import com.lsz.model.bo.LayuiNavbarBO;
+import com.lsz.model.bo.face.DtoAttrBO;
+import com.lsz.model.bo.face.DtoBO;
 import com.lsz.model.bo.face.SavePostBO;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -57,10 +59,10 @@ public class SaveFacesService {
         if (fileHead.exists()) {
             String json = FileUtils.FileUTF8ToStr(fileHead);
             JSONArray jsonArray = null;
-            try{
+            try {
                 jsonArray = JSONObject.parseArray(json);
 
-            }catch (Exception e){
+            } catch (Exception e) {
                 return null;
             }
             for (Object obj : jsonArray) {
@@ -169,19 +171,39 @@ public class SaveFacesService {
             log.info("saveDo异常 name不能为空");
             return "";
         }
-        savePostBO.setName(savePostBO.getName().replace("*", "")
+        savePostBO.setName(fileNameDo(savePostBO.getName()));
+        String path = FileDirStr + File.separator + dirName;
+        checkFilePath(path);
+        String json = JSONObject.toJSONString(savePostBO);
+        String name = savePostBO.getName();
+        String fileName = path + File.separator + name + ".json";
+        FileUtils.strToFileUTF8(fileName, json);
+        return "ok";
+    }
+
+    private static String fileNameDo(String filename) {
+        return filename.replace("*", "")
                 .replace("/", "")
                 .replace("\\", "")
                 .replace("\"", "")
                 .replace(":", "")
                 .replace("?", "")
                 .replace("|", "")
+                .replace("@", "")
                 .replace("<", "")
-                .replace(">", ""));
+                .replace(">", "");
+    }
+
+    public String saveDoDto(DtoBO dtoBO, String dirName) {
+        if (StringUtils.isEmpty(dtoBO.getName())) {
+            log.info("saveDoDto name不能为空");
+            return "";
+        }
+        dtoBO.setName(fileNameDo(dtoBO.getName()));
         String path = FileDirStr + File.separator + dirName;
         checkFilePath(path);
-        String json = JSONObject.toJSONString(savePostBO);
-        String name = savePostBO.getName();
+        String json = JSONObject.toJSONString(dtoBO);
+        String name = dtoBO.getName();
         String fileName = path + File.separator + name + ".json";
         FileUtils.strToFileUTF8(fileName, json);
         return "ok";
@@ -197,7 +219,7 @@ public class SaveFacesService {
 
     }
 
-    public SavePostBO openFileEx(String fileStr, String dirName) {
+    public SavePostBO openFileEx(String fileStr, String dirName, String apiDir) {
         final String finalStr = "fileStr=";
         int pos = fileStr.indexOf(finalStr);
         if (pos == -1) return null;
@@ -205,17 +227,48 @@ public class SaveFacesService {
         if (pos2 < pos) {
             pos2 = fileStr.length();
         }
-        return openFile(fileStr.substring(pos + finalStr.length(), pos2), dirName);
+        return openFile(fileStr.substring(pos + finalStr.length(), pos2), dirName, apiDir);
     }
 
-    public SavePostBO openFile(String fileStr, String dirName) {
+    /**
+     * @param fileStr
+     * @param dirName
+     * @param apiDir  带斜杠的  /api
+     * @return
+     */
+    public SavePostBO openFile(String fileStr, String dirName, String apiDir) {
         fileStr = MD5Utils.decodeUtf8(fileStr);
-        File file = new File(FileDirP + File.separator + dirName + File.separator + fileStr);
+        File file = new File(FileDirP + File.separator + dirName + apiDir + File.separator + fileStr);
         if (file.exists()) {
             String fileS = FileUtils.FileUTF8ToStr(file);
             if (!StringUtils.isEmpty(fileS)) {
                 SavePostBO savePostBO = JSONObject.parseObject(fileS, SavePostBO.class);
                 return savePostBO;
+            }
+        }
+        return null;
+    }
+    public List<String> getDtoList(String dirName){
+        List<String> list = new ArrayList<>();
+        File file = new File(FileDirP + File.separator + dirName + File.separator + "dto");
+        if (file.exists()) {
+            File[] files =   file.listFiles();
+            for (File f :files){
+                list.add(f.getName());
+
+            }
+            return list;
+        }
+        return null;
+    }
+    public DtoBO openDtoFile(String fileStr, String dirName, String apiDir) {
+        fileStr = MD5Utils.decodeUtf8(fileStr);
+        File file = new File(FileDirP + File.separator + dirName + apiDir + File.separator + fileStr);
+        if (file.exists()) {
+            String fileS = FileUtils.FileUTF8ToStr(file);
+            if (!StringUtils.isEmpty(fileS)) {
+                DtoBO dtoBO = JSONObject.parseObject(fileS, DtoBO.class);
+                return dtoBO;
             }
         }
         return null;
@@ -249,7 +302,7 @@ public class SaveFacesService {
     }
 
     public LayuiNavbarBO navbarFind(String txtUrl, String txtName, String projectName, String findUrl) {
-        List<LayuiNavbarBO> list = getNavbar(projectName);
+        List<LayuiNavbarBO> list = getNavbar(projectName, "api");
         if (CollectionUtils.isEmpty(list)) {
             return null;
         }
@@ -305,7 +358,7 @@ public class SaveFacesService {
                     if (StringUtils.isEmpty(layuiNavbarBO.getUrl())) {
                         continue;
                     }
-                    SavePostBO savePostBO = openFileEx(layuiNavbarBO.getUrl(), projectName);
+                    SavePostBO savePostBO = openFileEx(layuiNavbarBO.getUrl(), projectName, "/api");
                     if (savePostBO == null) {
                         continue;
                     }
@@ -322,8 +375,8 @@ public class SaveFacesService {
         return null;
     }
 
-    public List<LayuiNavbarBO> getNavbar(String dirName) {
-        File dir = new File(FileDirP + File.separator + dirName);
+    public List<LayuiNavbarBO> getNavbar(String dirName, String typeName) {
+        File dir = new File(FileDirP + File.separator + dirName + File.separator + typeName);
         List<LayuiNavbarBO> list = new LinkedList<>();
         if (!dir.exists()) {
             list.add(new LayuiNavbarBO());
@@ -344,7 +397,7 @@ public class SaveFacesService {
                 layuiNavbarBO.setSpread(false);
                 layuiNavbarBO.setTitle(file.getName());
                 layuiNavbarBO.setIcon("fa-cubes");
-                layuiNavbarBO.setId(dirName + String.valueOf(id));
+                layuiNavbarBO.setId(dirName + String.valueOf(id) + typeName);
                 if (dirB1) {
                     layuiNavbarBO.setSpread(false);
                     dirB1 = !dirB1;
@@ -364,22 +417,22 @@ public class SaveFacesService {
                         String fileStr = file.getName() + File.separator + file2.getName();
 
 
-                        layuiNavbarBO2.setUrl("face/opendo?fileStr=" + MD5Utils.encodeUtf8(fileStr) + "&dirName=" + dirName);
+                        layuiNavbarBO2.setUrl("face/opendo?type=" + typeName + "&fileStr=" + MD5Utils.encodeUtf8(fileStr) + "&dirName=" + dirName);
                         layuiNavbarBO2.setSpread(true);
                         layuiNavbarBO2.setTitleEx(file2.getName());
                         layuiNavbarBO2.setIcon("fa-stop-circle");
-                        layuiNavbarBO2.setId(dirName + String.valueOf(id));
+                        layuiNavbarBO2.setId(dirName + String.valueOf(id) + typeName);
                         layuiNavbarBO.getChildren().add(layuiNavbarBO2);
                     }
 
                 }
 
             } else {
-                layuiNavbarBO.setUrl("face/opendo?fileStr=" + MD5Utils.encodeUtf8(file.getName()));
+                layuiNavbarBO.setUrl("face/opendo?type=" + typeName + "&fileStr=" + MD5Utils.encodeUtf8(file.getName()));
                 layuiNavbarBO.setSpread(true);
                 layuiNavbarBO.setTitleEx(file.getName());
                 layuiNavbarBO.setIcon("fa-stop-circle");
-                layuiNavbarBO.setId(dirName + String.valueOf(id));
+                layuiNavbarBO.setId(dirName + String.valueOf(id) + typeName);
                 //layuiNavbarBO.setChildren(null);
             }
 
@@ -412,33 +465,53 @@ public class SaveFacesService {
         //对文件进行循环遍历
         for (File file : files) {
             doJavaFileDo(file);
+            doJavaFileDoDto(file);
         }
         log.info("执行完毕。。。");
+    }
+
+    public void doJavaFileDoDto(File file) {
+        if (file == null || !file.isDirectory()) {
+            return;
+        }
+        String apiPath = findPath(file.getAbsolutePath(), "dto");
+        if (StringUtils.isEmpty(apiPath)) {
+            log.info("路径:{} 找不到dto目录", file.getAbsolutePath());
+            return;
+        }
+        FileDirStr = FileDirP + File.separator + file.getName() + File.separator + "dto";
+        File dir = new File(FileDirStr);
+        if (dir.exists()) {
+            deleteDir(dir);
+        }
+        //创建项目文件夹
+        dir.mkdirs();
+        batchGenerateDto(apiPath, file.getName());
     }
 
     public void doJavaFileDo(File file) {
         if (file == null || !file.isDirectory()) {
             return;
         }
-        String apiPath = findApiPath(file.getAbsolutePath());
+        String apiPath = findPath(file.getAbsolutePath(), "api");
         if (StringUtils.isEmpty(apiPath)) {
             log.info("路径:{} 找不到api目录", file.getAbsolutePath());
             return;
         }
         log.info("正在处理项目{}", file.getName());
-        FileDirStr = FileDirP + File.separator + file.getName();
+        FileDirStr = FileDirP + File.separator + file.getName() + File.separator + "api";
         File dir = new File(FileDirStr);
         if (dir.exists()) {
             deleteDir(dir);
         }
-        dir.mkdir();//创建文件夹
+        //创建项目文件夹
+        dir.mkdirs();
         batchGenerate(apiPath, file.getName());
-
     }
 
-    public String findApiPath(String path) {
+    public String findPath(String path, String dirName) {
         sFindPath = "";
-        traverseFolder(path);
+        traverseFolder(path, dirName);
         return sFindPath;
     }
 
@@ -452,16 +525,29 @@ public class SaveFacesService {
         }
     }
 
+    public void batchGenerateDto(String path, String projectName) {
+        File dir = new File(path);
+        File[] files = dir.listFiles();
+        if (files == null) return;
+        //对文件进行循环遍历
+        for (File file : files) {
+            doJavaFileDto(file, projectName);
+        }
+    }
+
     private void doJavaFile(File file, String projectName) {
         String className = file.getName();
         className = className.replace(".java", "");
-        String tmpPath = FileDirP + File.separator + projectName + File.separator + className;
+        String tmpPath = FileDirP + File.separator + projectName + File.separator + "api";
+
+        tmpPath = tmpPath + File.separator + className;
         //如果目录存在 则删除
         File dir = new File(tmpPath);
         if (dir.exists()) {
             deleteDir(dir);
         }
-        dir.mkdir();//创建文件夹
+        //创建java api文件夹
+        dir.mkdir();
         String fileStr = FileUtils.FileUTF8ToStr(file);
         if (StringUtils.isEmpty(fileStr)) return;
         final String keyVal = "Mapping(";
@@ -488,8 +574,8 @@ public class SaveFacesService {
                 savePostBO.setProjectName(projectName);
 
                 savePostBO.setDescribe(savePostBO.getName());
-                if (savePostBO.getName().length() > 10) {
-                    savePostBO.setName(savePostBO.getName().substring(0, 10));
+                if (savePostBO.getName().length() > 12) {
+                    savePostBO.setName(savePostBO.getName().substring(0, 12));
                 }
 
                 saveDo(savePostBO, className);
@@ -498,8 +584,115 @@ public class SaveFacesService {
 
     }
 
+    private void doJavaFileDto(File file, String projectName) {
+        String className = file.getName();
+        className = className.replace(".java", "");
+        String tmpPath = FileDirP + File.separator + projectName + File.separator + "dto";
+
+        tmpPath = tmpPath + File.separator + className;
+        //如果目录存在 则删除
+        File dir = new File(tmpPath);
+        if (dir.exists()) {
+            deleteDir(dir);
+        }
+        //创建java dto文件夹
+        dir.mkdir();
+        String fileStr = FileUtils.FileUTF8ToStr(file);
+        if (StringUtils.isEmpty(fileStr)) return;
+
+
+        final String classStr = " class ";
+        int classPos = fileStr.indexOf(classStr);
+        if (classPos == -1) return;
+        int classdkhPos = fileStr.indexOf("{", classPos);
+        if (classdkhPos == -1) return;
+        //private
+        int mapPos = classdkhPos;
+        String keyVal = "private ";
+        DtoBO dtoBO = new DtoBO();
+        while (true) {
+            //循环往下找 mapping
+            int tmpMapPos = fileStr.indexOf(keyVal, mapPos);
+            if (tmpMapPos == -1) {
+                //找不到 说明没了
+                break;
+            }
+            //找到了 private 同时行内有分号
+            int fenhaoPos = fileStr.indexOf(";", tmpMapPos);
+            int rowPos = fileStr.indexOf("\n", tmpMapPos);
+            if (rowPos == -1) {
+                break;
+            }
+
+            if (fenhaoPos != -1 && fenhaoPos < rowPos) {
+                String tmpStr = fileStr.substring(tmpMapPos + keyVal.length(), fenhaoPos).trim();
+                int kgPos = tmpStr.indexOf(" ");
+                if (kgPos != -1) {
+                    String typeStr = tmpStr.substring(0, kgPos);
+                    String nameStr = tmpStr.substring(kgPos + 1);
+                    String remStr = getRemStr(fileStr, mapPos, tmpMapPos);
+
+                    DtoAttrBO dtoAttrBO = new DtoAttrBO();
+                    int notNullPos = fileStr.indexOf("@NotNull", mapPos);
+                    if (notNullPos != -1 && notNullPos < tmpMapPos) {
+                        dtoAttrBO.setParameRequired("true");
+                    } else {
+                        dtoAttrBO.setParameRequired("false");
+                    }
+                    dtoAttrBO.setTypeStr(typeStr);
+                    dtoAttrBO.setNameStr(nameStr);
+                    dtoAttrBO.setRemStr(remStr);
+                    dtoBO.getAttrList().add(dtoAttrBO);
+                }
+            }
+            dtoBO.setName(file.getName().replace(".java", ""));
+            mapPos = tmpMapPos + keyVal.length();
+            if (dtoBO != null && !StringUtils.isEmpty(dtoBO.getName())) {
+
+                dtoBO.setProjectName(projectName);
+
+                dtoBO.setDescribe(getRemStr(fileStr, 0, classPos));
+//                if (!StringUtils.isEmpty(dtoBO.getDescribe())) {
+//                    dtoBO.setName(dtoBO.getDescribe().length() > 12 ? dtoBO.getDescribe().substring(0, 12) : dtoBO.getDescribe());
+//                }
+                saveDoDto(dtoBO, className);
+            }
+        }
+    }
+
     private static int findStrLast(String str, int pos, String findStr) {
         return str.substring(0, pos).lastIndexOf(findStr);
+    }
+
+    private String getRemStr(String codeStr, int leftPos, int rightPos) {
+        int pos1 = findStrLast(codeStr, rightPos, "/*");
+        int pos2 = findStrLast(codeStr, rightPos, "*/");
+        String returnStr = "";
+        if (pos1 != -1 && pos2 != -1 && pos1 > leftPos) {
+            if (pos1 > pos2) return null;
+            String zhujieStr = codeStr.substring(pos1, pos2);
+            String[] sArr = zhujieStr.split("\n");
+
+            if (sArr != null) {
+                for (int i = 1; i < sArr.length - 1; i++) {
+                    //第一行 最后一行 不要
+                    String tmpS = sArr[i].trim();
+                    if (tmpS.length() > 1 && "*".equals(tmpS.substring(0, 1))) {
+                        tmpS = tmpS.substring(1).trim();
+                    }
+                    returnStr += tmpS;
+                }
+            }
+        }
+        //如果没有，就找双斜杠 //
+        if (StringUtils.isEmpty(returnStr)) {
+            int pos3 = findStrLast(codeStr, rightPos, "//");
+            if (pos3 != -1) {
+                int endPos = codeStr.indexOf("\n", pos3);
+                returnStr = codeStr.substring(pos3 + 2, endPos - 1);
+            }
+        }
+        return returnStr;
     }
 
     /**
@@ -563,7 +756,10 @@ public class SaveFacesService {
 
                 }
                 String paramStr = paramHandle(fileStr, pos, paramS);
+                String returnTypeStr = returnHandle(fileStr, pos);
+
                 savePostBO.setParameterRem(paramStr);
+                savePostBO.setReturnTypeStr(returnTypeStr);
                 savePostBO.setReturnStr(returnS);
                 if (!StringUtils.isEmpty(nameS)) {
                     if ("*".equals(nameS.substring(nameS.length() - 1))) {
@@ -574,6 +770,39 @@ public class SaveFacesService {
             }
         }
         return savePostBO;
+    }
+
+    /**
+     * 处理返回类型
+     *
+     * @param fileStr
+     * @param pos
+     * @return
+     */
+    private String returnHandle(String fileStr, int pos) {
+        int nPos = fileStr.indexOf("\n", pos);
+        //这里获取返回类型     ResponseInfo<List<StaffInfoDTO>>
+        if (nPos == -1) return "";
+        int leftKuohao = fileStr.indexOf("(", nPos);
+        if (leftKuohao == -1) return "";
+        String returnType = fileStr.substring(nPos, leftKuohao - 1).trim();
+        int konggePos = returnType.lastIndexOf(" ");
+        if (konggePos == -1) {
+            konggePos = returnType.lastIndexOf(">");
+            if (konggePos != -1) {
+                konggePos++;
+            }
+        }
+        if (konggePos != -1) {
+            returnType = returnType.substring(0, konggePos);
+            final String publicStr = "public";
+            int publicPos = returnType.indexOf(publicStr);
+            if (publicPos != -1) {
+                returnType = returnType.substring(publicPos + publicStr.length()).trim();
+            }
+
+        }
+        return returnType;
     }
 
     /**
@@ -593,6 +822,8 @@ public class SaveFacesService {
         int nPos = fileStr.indexOf("\n", pos);
         //这里不考虑其他注解的情况 因为其他注解一般也不会有括号
         //然后开始找括号
+
+
         StringBuffer sb = new StringBuffer();
         if (nPos == -1) return paramS;
         int leftKuohao = fileStr.indexOf("(", nPos);
@@ -714,7 +945,7 @@ public class SaveFacesService {
 
     private static String sFindPath = "";
 
-    public static void traverseFolder(String path) {
+    public static void traverseFolder(String path, String dirName) {
         File file = new File(path);
         if (file.exists()) {
             File[] files = file.listFiles();
@@ -725,7 +956,7 @@ public class SaveFacesService {
                 for (File file2 : files) {
                     if (file2.isDirectory()) {
 //                        System.out.println("文件夹:" + file2.getAbsolutePath());
-                        if ("api".equals(file2.getName())) {
+                        if (dirName.equals(file2.getName())) {
                             sFindPath = file2.getPath();
                         }
                         if ("mobile".equals(file2.getName())) {
@@ -733,7 +964,7 @@ public class SaveFacesService {
                         }
 
                         if (!"build".equals(file2.getName())) {
-                            traverseFolder(file2.getAbsolutePath());
+                            traverseFolder(file2.getAbsolutePath(), dirName);
                         }
                     }
                 }

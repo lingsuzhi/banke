@@ -17,14 +17,7 @@
         margin-top: 15px;
         margin-bottom: 30px;
     }
-    .myabq{
-        color:#01AAED;
-        text-decoration:underline;
 
-    visited {text-decoration:underline;}
-    hover {color:#ba2636;text-decoration:underline;}
-    active {color:#ba2636;}
-    }
  </style>
 
 <style>
@@ -52,7 +45,7 @@
 </style>
 <body>
 <form class="layui-form" action="">
-<div style="margin-top: 50px ; margin-left: 60px;margin-right: 30px">
+<div style="margin-top: 20px ; margin-left: 60px;margin-right: 30px">
     <div style="float:left ; width: 80%">
 
         <h1 style="margin-bottom: 30px ; ">${(obj.name)!}<h1>
@@ -61,11 +54,9 @@
 
     </div>
     <div style="float:right;">
+
         <div>
-            <input type="button" class="layui-btn layui-btn-primary layui-btn-sm layui-btn-radius" id="testDobtn" value="测试接口"/>
-        </div>
-        <div>
-            <input type="button" class="layui-btn layui-btn-primary layui-btn-sm layui-btn-radius" id="docbtn" value="接口文档"/>
+            <input type="button" class="layui-btn layui-btn-primary layui-btn-sm layui-btn-radius" id="docbtn" value="word文档"/>
         </div>
         <input type="hidden" id="name"  value="${(pathName)!}"/>
     </div>
@@ -77,25 +68,10 @@
             <h3><span class="layui-badge-dot"></span>&nbsp;&nbsp;${(obj.describe)!}</h3>
         </div>
     </div>
-    <div>
-        <h2>请求URL</h2>
-        <div class="contextZ">
-
-            <h3 class="layui-bg-gray"><span class="layui-badge-dot"></span>&nbsp;&nbsp;${(obj.url)!}</h3>
-        </div>
-    </div>
-    <div>
-        <h2>请求方式</h2>
-        <div class="contextZ">
-
-            <h3><span class="layui-badge-dot"></span>&nbsp;&nbsp;${(obj.method)!}</h3>
-        </div>
-    </div>
-
-    <div>
+     <div>
         <h2>参数</h2>
         <div class="contextZ">
-            <#if parameList??>
+            <#if obj.attrList??>
                 <table class="layui-table">
                     <colgroup>
                         <col width="200">
@@ -113,18 +89,19 @@
                     </tr>
                     </thead>
                     <tbody>
+                <#assign parameList=obj.attrList>
                 <#list parameList as listObj>
                 <tr>
-                    <td>${(listObj.parameName)!}</td>
+                    <td>${(listObj.nameStr)!}</td>
                     <td>  <input type="checkbox"  name="like[write]" title="必选" <#if listObj.parameRequired?? && listObj.parameRequired=='true'>checked</#if>></td>
-                    <td>${(listObj.parameType)!}</td>
-                    <td>${(listObj.parameRem)!}</td>
+                    <td>${(listObj.typeStr)!}</td>
+                    <td>${(listObj.remStr)!}</td>
                     </tr>
                 </#list>
                     </tbody>
                 </table>
             <#else >
-                <h3><span class="layui-badge-dot"></span>&nbsp;&nbsp;${(obj.parameterRem)!}</h3>
+                <h3><span class="layui-badge-dot"></span>&nbsp;&nbsp;</h3>
 
             </#if>
 
@@ -133,12 +110,7 @@
         </div>
     </div>
     <div>
-        <h2>返回值</h2>
-        <div class="contextZ">
 
-            <h3><span class="layui-badge-dot"></span>&nbsp;&nbsp;${(obj.returnTypeStr)!} </h3>
-            <h3>&nbsp;&nbsp;${(obj.returnStr)!}</h3>
-        </div>
     </div>
 </div>
 </form>
@@ -162,13 +134,7 @@
         });
     });
     $("#docbtn").click(function () {
-        window.location.href = "/face/docdo" + "?name=" + $("#name").val();
-        //    $.get("/face/docdo" + "?name=" + $("#name").val());
-    });
-    $("#testDobtn").click(function () {
-
-        window.location.href = "/face/face.php" + "?name=" + $("#name").val();
-        //    $.get("/face/docdo" + "?name=" + $("#name").val());
+        alert("hello world~")
     });
     function onmouseoverDo(){
         $("#qrcode").show();
@@ -194,18 +160,6 @@
     }
     jQuery(function(){
         jQuery('#qrcode').qrcode(window.location.href);
-    })
-    $(".myabq").click(function(){
-        var href = $(this).attr("a-href");
-        console.log(href)
-        if(href){
-            layer.open({
-                type: 2,
-                title: "0.0 你好呀~",
-                area: ['80%', '90%'],
-                content: href
-            });
-        }
     })
 </script>
 

@@ -41,6 +41,7 @@ layui.define(['element', 'nprogress', 'form', 'table', 'loader', 'tab', 'navbar'
     }
 
     var app = {
+        dtoB:false,
         hello: function (str) {
             layer.alert('Hello ' + (str || 'test'));
         },
@@ -81,7 +82,10 @@ layui.define(['element', 'nprogress', 'form', 'table', 'loader', 'tab', 'navbar'
 
 
         },
-
+        dtoOrApi:function(){
+            app.dtoB = !app.dtoB;
+            app.funSetMenu(app.projectName);
+        },
         search: function () {
 //txtUrl,txtName
             layer.open({
@@ -111,10 +115,14 @@ layui.define(['element', 'nprogress', 'form', 'table', 'loader', 'tab', 'navbar'
 
             $("#proName").html(name);
             app.projectName = name;
+            var url =  '/datas/navbar1?dirName=' + name;
+            if(app.dtoB){
+                url =  '/datas/navbarDto?dirName=' + name;
+            }
             setCookie("c_dirName", name, 7);
             navbar.set({
                 remote: {
-                    url: '/datas/navbar1?dirName=' + name
+                    url: url
                 }
             }).render(function (data) {
                 tab.tabAdd(data);

@@ -49,9 +49,14 @@ public class IndexController {
     @ResponseBody
     public List<LayuiNavbarBO> navbar1(@RequestParam String dirName) {
 
-        return saveFacesService.getNavbar(dirName);
+        return saveFacesService.getNavbar(dirName,"api");
     }
+    @RequestMapping("/datas/navbarDto")
+    @ResponseBody
+    public List<LayuiNavbarBO> navbarDto(@RequestParam String dirName) {
 
+        return saveFacesService.getNavbar(dirName,"dto");
+    }
     /**
      * 搜索功能
      *
