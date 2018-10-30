@@ -1,5 +1,6 @@
 10.40.129.20    ng                 logop/banke@log
 10.40.137.201
+10.64.4.100       wls81/banke@dev
 logop/bkbk@sit2
 
 ps -ef | grep DSP-config

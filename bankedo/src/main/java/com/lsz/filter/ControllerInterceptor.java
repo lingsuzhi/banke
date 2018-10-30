@@ -50,7 +50,8 @@ public class ControllerInterceptor {
 
     @AfterReturning(returning = "rvt", value = "controllerMethodPointcut()")
     public Object InterceptorAfter(JoinPoint pjp, Object rvt) {
-        log.warn("#### Finish #### {} return[{}]", pjp.toShortString(), rvt);
+        log.warn("#### Finish #### {}", pjp.toString());
+//        log.warn("#### Finish #### {} return[{}]", pjp.toShortString(), rvt);
         return rvt;
     }
 //    @Around("controllerMethodPointcut()")

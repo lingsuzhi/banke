@@ -248,12 +248,13 @@ public class SaveFacesService {
         }
         return null;
     }
-    public List<String> getDtoList(String dirName){
+
+    public List<String> getDtoList(String dirName) {
         List<String> list = new ArrayList<>();
         File file = new File(FileDirP + File.separator + dirName + File.separator + "dto");
         if (file.exists()) {
-            File[] files =   file.listFiles();
-            for (File f :files){
+            File[] files = file.listFiles();
+            for (File f : files) {
                 list.add(f.getName());
 
             }
@@ -261,6 +262,7 @@ public class SaveFacesService {
         }
         return null;
     }
+
     public DtoBO openDtoFile(String fileStr, String dirName, String apiDir) {
         fileStr = MD5Utils.decodeUtf8(fileStr);
         File file = new File(FileDirP + File.separator + dirName + apiDir + File.separator + fileStr);
@@ -358,7 +360,7 @@ public class SaveFacesService {
                     if (StringUtils.isEmpty(layuiNavbarBO.getUrl())) {
                         continue;
                     }
-                    SavePostBO savePostBO = openFileEx(layuiNavbarBO.getUrl(), projectName, "/api");
+                    SavePostBO savePostBO = openFileEx(layuiNavbarBO.getUrl(), projectName, File.separator + "api");
                     if (savePostBO == null) {
                         continue;
                     }
@@ -623,40 +625,42 @@ public class SaveFacesService {
             if (rowPos == -1) {
                 break;
             }
-
             if (fenhaoPos != -1 && fenhaoPos < rowPos) {
                 String tmpStr = fileStr.substring(tmpMapPos + keyVal.length(), fenhaoPos).trim();
-                int kgPos = tmpStr.indexOf(" ");
-                if (kgPos != -1) {
-                    String typeStr = tmpStr.substring(0, kgPos);
-                    String nameStr = tmpStr.substring(kgPos + 1);
-                    String remStr = getRemStr(fileStr, mapPos, tmpMapPos);
+                if (!StringUtils.isEmpty(tmpStr) && -1 == tmpStr.indexOf("static ") && -1 == tmpStr.indexOf("final ")) {
+                    int kgPos = tmpStr.indexOf(" ");
+                    if (kgPos != -1) {
+                        String typeStr = tmpStr.substring(0, kgPos);
+                        String nameStr = tmpStr.substring(kgPos + 1);
+                        String remStr = getRemStr(fileStr, mapPos, tmpMapPos);
 
-                    DtoAttrBO dtoAttrBO = new DtoAttrBO();
-                    int notNullPos = fileStr.indexOf("@NotNull", mapPos);
-                    if (notNullPos != -1 && notNullPos < tmpMapPos) {
-                        dtoAttrBO.setParameRequired("true");
-                    } else {
-                        dtoAttrBO.setParameRequired("false");
+                        DtoAttrBO dtoAttrBO = new DtoAttrBO();
+                        int notNullPos = fileStr.indexOf("@NotNull", mapPos);
+                        if (notNullPos != -1 && notNullPos < tmpMapPos) {
+                            dtoAttrBO.setParameRequired("true");
+                        } else {
+                            dtoAttrBO.setParameRequired("false");
+                        }
+                        dtoAttrBO.setTypeStr(typeStr);
+                        dtoAttrBO.setNameStr(nameStr);
+                        dtoAttrBO.setRemStr(remStr);
+                        dtoBO.getAttrList().add(dtoAttrBO);
                     }
-                    dtoAttrBO.setTypeStr(typeStr);
-                    dtoAttrBO.setNameStr(nameStr);
-                    dtoAttrBO.setRemStr(remStr);
-                    dtoBO.getAttrList().add(dtoAttrBO);
                 }
+
             }
-            dtoBO.setName(file.getName().replace(".java", ""));
             mapPos = tmpMapPos + keyVal.length();
-            if (dtoBO != null && !StringUtils.isEmpty(dtoBO.getName())) {
+        }//end while
+        dtoBO.setName(file.getName().replace(".java", ""));
+        if (dtoBO != null && !StringUtils.isEmpty(dtoBO.getName())) {
 
-                dtoBO.setProjectName(projectName);
+            dtoBO.setProjectName(projectName);
 
-                dtoBO.setDescribe(getRemStr(fileStr, 0, classPos));
+            dtoBO.setDescribe(getRemStr(fileStr, 0, classPos));
 //                if (!StringUtils.isEmpty(dtoBO.getDescribe())) {
 //                    dtoBO.setName(dtoBO.getDescribe().length() > 12 ? dtoBO.getDescribe().substring(0, 12) : dtoBO.getDescribe());
 //                }
-                saveDoDto(dtoBO, className);
-            }
+            saveDoDto(dtoBO, className);
         }
     }
 
@@ -687,9 +691,11 @@ public class SaveFacesService {
         //如果没有，就找双斜杠 //
         if (StringUtils.isEmpty(returnStr)) {
             int pos3 = findStrLast(codeStr, rightPos, "//");
-            if (pos3 != -1) {
+            if (pos3 != -1 && pos3 > leftPos) {
                 int endPos = codeStr.indexOf("\n", pos3);
-                returnStr = codeStr.substring(pos3 + 2, endPos - 1);
+                if (endPos > pos3 + 3) {
+                    returnStr = codeStr.substring(pos3 + 2, endPos - 1);
+                }
             }
         }
         return returnStr;
@@ -832,9 +838,9 @@ public class SaveFacesService {
         for (int fori = leftKuohao + 1; ; fori++) {
             if (fori >= fileStr.length()) break;
             String tmpS = fileStr.substring(fori, fori + 1);
-            if ("(".equals(tmpS)) {
+            if ("(".equals(tmpS) || "<".equals(tmpS)) {
                 leftK++;
-            } else if (")".equals(tmpS)) {
+            } else if (")".equals(tmpS)|| ">".equals(tmpS)) {
                 leftK--;
                 if (leftK <= 0) {
                     break;
