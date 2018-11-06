@@ -81,6 +81,9 @@ public class FaceController {
                     dtoAttrBO.setTypeStr(HtmlUtil.strToHtml(dtoAttrBO.getTypeStr()));
                 }
             }
+            if(StringUtils.isEmpty(dtoBO.getDescribe())){
+                dtoBO.setDescribe(SaveFacesService.LazyDesc);
+            }
             model.addAttribute("obj", dtoBO);
             return "dtoDoc";
 

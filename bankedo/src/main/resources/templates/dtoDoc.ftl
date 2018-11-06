@@ -15,7 +15,11 @@
     .contextZ{
         margin-left: 26px;
         margin-top: 15px;
-        margin-bottom: 30px;
+        margin-bottom: 20px;
+    }
+    .contextZ td{
+        padding-top: 6px;
+        font-size: 15px;
     }
 
  </style>
