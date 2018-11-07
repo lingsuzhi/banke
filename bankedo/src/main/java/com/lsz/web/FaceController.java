@@ -82,6 +82,9 @@ public class FaceController {
                     dtoAttrBO.setTypeStr(HtmlUtil.strToHtml(dtoAttrBO.getTypeStr()));
                 }
             }
+            if(dtoBO != null && StringUtils.isEmpty(dtoBO.getDescribe())){
+                dtoBO.setDescribe(SaveFacesService.LazyDesc);
+            }
             model.addAttribute("obj", dtoBO);
             return "dtoDoc";
 
@@ -94,6 +97,8 @@ public class FaceController {
 
             if (!StringUtils.isEmpty(savePostBO.getReturnTypeStr())) {
                 String tmpStr = savePostBO.getReturnTypeStr().replace("ResponseInfo", "")
+
+                        .replace("List&lt;", "")
                         .replace("&lt;", "")
                         .replace("&gt;", "");
                 if (dtoList.contains(tmpStr)) {
@@ -136,6 +141,10 @@ public class FaceController {
         }
         if (list.size() > 0) {
             model.addAttribute("parameList", list);
+        }else{
+            if(StringUtils.isEmpty(savePostBO.getParameterRem())){
+                savePostBO.setParameterRem("无");
+            }
         }
     }
 

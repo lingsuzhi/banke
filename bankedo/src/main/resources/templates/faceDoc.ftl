@@ -55,7 +55,9 @@
 <div style="margin-top: 50px ; margin-left: 60px;margin-right: 30px">
     <div style="float:left ; width: 80%">
 
-        <h1 style="margin-bottom: 30px ; ">${(obj.name)!}<h1>
+        <h1 style="margin-bottom: 30px ; ">
+            <i class="layui-icon layui-icon-star" style="font-size: 32px; color: #5FBB78;">&#xe62e;</i>&nbsp;
+              ${(obj.name)!} <h1>
 
             <hr class="layui-bg-gray">
 
