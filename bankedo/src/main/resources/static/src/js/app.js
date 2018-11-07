@@ -20,6 +20,7 @@ layui.define(['element', 'nprogress', 'form', 'table', 'loader', 'tab', 'navbar'
         _componentPath = 'components/',
         spa = layui.spa;
     tab = layui.tab
+
     function getCookie(c_name) {
         if (document.cookie.length > 0) {
             c_start = document.cookie.indexOf(c_name + "=")
@@ -41,7 +42,7 @@ layui.define(['element', 'nprogress', 'form', 'table', 'loader', 'tab', 'navbar'
     }
 
     var app = {
-        dtoB:false,
+        dtoB: false,
         hello: function (str) {
             layer.alert('Hello ' + (str || 'test'));
         },
@@ -56,22 +57,22 @@ layui.define(['element', 'nprogress', 'form', 'table', 'loader', 'tab', 'navbar'
                     findUrl: app.findUrl
                 },
                 function (obj) {
-                console.log( "搜索接口返回：" + obj);
-                    if(obj && obj.id){
+                    console.log("搜索接口返回：" + obj);
+                    if (obj && obj.id) {
                         var abq = $("#aId1");
-                        if(abq.attr("data-options")){
-                            abq= $("#aId2");
+                        if (abq.attr("data-options")) {
+                            abq = $("#aId2");
                         }
-                        if(abq.attr("data-options")){
-                            abq= $("#aId3");
+                        if (abq.attr("data-options")) {
+                            abq = $("#aId3");
                         }
-                        if(abq.attr("data-options")){
+                        if (abq.attr("data-options")) {
                             alert("就做了3个。。。")
                             return;
                         }
-                        if(abq){
-                            var objStr = "{url:'"+ obj.url + "',icon:'fa-stop-circle',title:'"+ obj.title +"',id:'"+ obj.id +"'}";
-                            abq.attr("data-options",objStr);
+                        if (abq) {
+                            var objStr = "{url:'" + obj.url + "',icon:'fa-stop-circle',title:'" + obj.title + "',id:'" + obj.id + "'}";
+                            abq.attr("data-options", objStr);
                             app.findUrl = obj.url;
                             abq.click();
 
@@ -82,7 +83,7 @@ layui.define(['element', 'nprogress', 'form', 'table', 'loader', 'tab', 'navbar'
 
 
         },
-        dtoOrApi:function(){
+        dtoOrApi: function () {
             app.dtoB = !app.dtoB;
             app.funSetMenu(app.projectName);
         },
@@ -115,9 +116,9 @@ layui.define(['element', 'nprogress', 'form', 'table', 'loader', 'tab', 'navbar'
 
             $("#proName").html(name);
             app.projectName = name;
-            var url =  '/datas/navbar1?dirName=' + name;
-            if(app.dtoB){
-                url =  '/datas/navbarDto?dirName=' + name;
+            var url = '/datas/navbar1?dirName=' + name;
+            if (app.dtoB) {
+                url = '/datas/navbarDto?dirName=' + name;
             }
             setCookie("c_dirName", name, 7);
             navbar.set({
@@ -194,7 +195,12 @@ layui.define(['element', 'nprogress', 'form', 'table', 'loader', 'tab', 'navbar'
                 //     tab.tabAdd(data);
                 // });
                 // navbar加载方式二，设置远程地址加载
-                var dirName = getCookie("c_dirName");
+                var dirName = $("#proNameHide").val();
+                if(dirName){
+
+                }else{
+                    dirName = getCookie("c_dirName");
+                }
                 if (dirName) {
 
                 } else {

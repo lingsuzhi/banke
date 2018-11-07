@@ -18,6 +18,7 @@
 <a href="javascript:;"    kit-target="" id="aId3" data-options=""></a>
 
 <div  >
+    <input type="hidden" id="proNameHide" value="${(proName)!}">
     <div class="layui-layout layui-layout-admin">
     <div class="layui-header">
         <div class="layui-logo"> <img src="${ctx}/images/xrk.png" onclick="layui.app.dtoOrApi()" class="layui-nav-img" style="width: 50px;height: 50px">API文档
@@ -69,6 +70,8 @@
         var app = layui.app,
                 $ = layui.jquery,
                 layer = layui.layer;
+
+
         //将message设置为全局以便子页面调用
         message = layui.message;
         //主入口
@@ -100,8 +103,6 @@
                     switchSkin(skin === undefined ? 'default' : skin);
                 }();
     });
-
-
 </script>
 </body>
 

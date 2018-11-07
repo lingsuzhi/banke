@@ -30,8 +30,10 @@ public class IndexController {
     private SaveFacesService saveFacesService;
 
     @RequestMapping("/index.php")
-    public String index(Model model) {
+    public String index(Model model,String proName) {
         model.addAttribute("headMenu", saveFacesService.getHeadMenu());
+        model.addAttribute("proName", proName);
+
         return "index";
     }
 
