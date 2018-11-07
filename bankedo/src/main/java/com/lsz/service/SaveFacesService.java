@@ -28,6 +28,8 @@ public class SaveFacesService {
     public static String FileDirP = "post";
     private static String FileDirStr = "";
 
+    public static  String LazyDesc = "这个人很懒，什么都没没没有留下~！";
+
     public String getHeadMenu() {
 //          <li class="layui-nav-item"><a href="">控制台</a></li>
 //            <li class="layui-nav-item"><a href="">商品管理</a></li>

@@ -12,7 +12,7 @@
 <body>
 <div style="margin-left: 10px">
     <div style="margin-top: 10px">
-    路径：<input type="text" STYLE="width: 300px;height: 26px" id="txtPath" value="/wls/api/code">
+    路径：<input type="text" STYLE="width: 300px;height: 26px" id="txtPath" value="${defUrl}">
     <input type="button" id="btnPL" class="layui-btn" value="批量生成">
     </div>
 

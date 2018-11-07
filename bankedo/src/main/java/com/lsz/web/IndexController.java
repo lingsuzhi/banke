@@ -41,7 +41,12 @@ public class IndexController {
     }
 
     @RequestMapping("/main.htm")
-    public String mainhtm() {
+    public String mainhtm(Model model) {
+        String defUrl = "/wls/api/code";
+        if (File.separator.equals("\\")) {
+            defUrl = "d:\\source";
+        }
+        model.addAttribute("defUrl",defUrl);
         return "main";
     }
 

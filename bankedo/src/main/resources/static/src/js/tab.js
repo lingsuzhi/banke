@@ -197,10 +197,10 @@ layui.define(['jquery', 'element', 'nprogress', 'utils'], function(exports) {
                 var currBoxHeight = $(that._parentElem).height(); //获取当前容器的高度
                 switch (_config.renderType) {
                     case renderType.page:
-                        $('.kit-tab .layui-tab-content').height(currBoxHeight - 43);
+                        $('.kit-tab .layui-tab-content').height(currBoxHeight - 13);
                         break;
                     case renderType.iframe:
-                        $('.kit-tab .layui-tab-content iframe').height(currBoxHeight - 47);
+                        $('.kit-tab .layui-tab-content iframe').height(currBoxHeight - 17);
                         break;
                 }
             }).resize();
