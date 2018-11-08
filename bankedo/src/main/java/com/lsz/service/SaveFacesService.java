@@ -96,7 +96,7 @@ public class SaveFacesService {
                 if ("ResponseInfo&lt;?&gt;".equals(savePostBO.getReturnTypeStr())) {
                     savePostBO.setReturnTypeStr("");
                     if (StringUtils.isEmpty(savePostBO.getReturnStr())) {
-                        savePostBO.setReturnTypeStr(SaveFacesService.LazyDesc);
+                        savePostBO.setReturnStr(SaveFacesService.LazyDesc);
                     }
                 } else {
                     String tmpStr = savePostBO.getReturnTypeStr().replace("ResponseInfo", "")

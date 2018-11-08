@@ -269,6 +269,12 @@
         });
     }
 
+    // layui.use('code', function(a) {
+    //     layui.code({
+    //         encode: true //是否转义html标签。默认不开启
+    //     });
+    // });
+
 </script>
 
 </body>
