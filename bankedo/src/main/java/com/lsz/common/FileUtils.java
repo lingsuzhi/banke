@@ -13,7 +13,7 @@ import static com.google.common.base.Preconditions.checkArgument;
  */
 public class FileUtils {
     public static String FileUTF8ToStr(File file){
-        if (file.isDirectory()) {
+        if (file.isDirectory() || !file.exists()) {
             return null;
         }
         FileInputStream fileInputStream = null;
@@ -44,6 +44,7 @@ public class FileUtils {
         }
         return null;
     }
+
     public static void strToFileUTF8(String fileName, String strBuff) {
         FileOutputStream out = null;
         OutputStreamWriter osw = null;

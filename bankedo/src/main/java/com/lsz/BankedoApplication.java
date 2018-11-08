@@ -10,10 +10,6 @@ import java.io.File;
 public class BankedoApplication {
 
 	public static void main(String[] args) {
-		if (File.separator.equals("\\")) {
-			SaveFacesService.FileDirP = "d:\\post";
-		}
-
 		SpringApplication.run(BankedoApplication.class, args);
 	}
 }

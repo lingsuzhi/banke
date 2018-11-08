@@ -3,20 +3,25 @@ package com.lsz.service;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.lsz.common.FileUtils;
+import com.lsz.common.HtmlUtil;
 import com.lsz.common.MD5Utils;
+import com.lsz.dto.FileTypeEnum;
+import com.lsz.dto.OpenDoDTO;
+import com.lsz.dto.RemPostDTO;
 import com.lsz.model.bo.LayuiNavbarBO;
 import com.lsz.model.bo.face.DtoAttrBO;
 import com.lsz.model.bo.face.DtoBO;
+import com.lsz.model.bo.face.ParameBO;
 import com.lsz.model.bo.face.SavePostBO;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import org.springframework.ui.Model;
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
 
 import java.io.File;
-import java.util.ArrayList;
-import java.util.LinkedList;
-import java.util.List;
+import java.lang.reflect.Field;
+import java.util.*;
 
 /*
  * Created by ex-lingsuzhi on 2018/4/16.
@@ -25,10 +30,146 @@ import java.util.List;
 @Slf4j
 public class SaveFacesService {
 
+    private static final String FILE_MAP_NAME = "urlmap.txt";
     public static String FileDirP = "post";
     private static String FileDirStr = "";
+    private static List<OpenDoDTO> FileMap = null;
+    public static final String LazyDesc = "这个人很懒，什么都没没没有留下~！";
+    public static Map<String, String> baseTypeMap;
 
-    public static  String LazyDesc = "这个人很懒，什么都没没没有留下~！";
+    static {
+        if (File.separator.equals("\\")) {
+            FileDirP = "d:\\post";
+        }
+        String json = FileUtils.FileUTF8ToStr(new File(FileDirP + File.separator + FILE_MAP_NAME));
+        if (!StringUtils.isEmpty(json)) {
+            try {
+                FileMap = JSONObject.parseArray(json, OpenDoDTO.class);
+            } catch (Exception e) {
+                log.info("SaveFacesService  static Exception ....");
+            }
+        }
+        baseTypeMap = new HashMap<>();
+        baseTypeMap.put("String", "字符串");
+//        baseTypeMap.put("int", "整型");
+//        baseTypeMap.put("Integer", "整型");
+//        baseTypeMap.put("long", "长整型");
+//        baseTypeMap.put("Long", "长整型");
+//        baseTypeMap.put("Boolean", "布尔型");
+//        baseTypeMap.put("boolean", "布尔型");
+
+//        baseTypeMap.put("double", "浮点型");
+//        baseTypeMap.put("Double", "浮点型");
+//        baseTypeMap.put("Date", "Date时间");
+        baseTypeMap.put("LocalDateTime", "LocalDateTime 时间");
+    }
+
+    public String opendo(String fileStr, String dirName, String type, Model model) {
+        if ("dto".equals(type)) {
+            DtoBO dtoBO = openDtoFile(fileStr);
+
+            if (dtoBO != null && !CollectionUtils.isEmpty(dtoBO.getAttrList())) {
+                for (DtoAttrBO dtoAttrBO : dtoBO.getAttrList()) {
+                    dtoAttrBO.setTypeStr(HtmlUtil.strToHtml(dtoAttrBO.getTypeStr()));
+
+                    String tmpType = baseTypeMap.get(dtoAttrBO.getTypeStr());
+                    //基础类型替换成中文
+                    if (!StringUtils.isEmpty(tmpType)) {
+                        dtoAttrBO.setTypeStr(tmpType);
+                    }
+                }
+            }
+            if (dtoBO != null && StringUtils.isEmpty(dtoBO.getDescribe())) {
+                dtoBO.setDescribe(SaveFacesService.LazyDesc);
+            }
+            model.addAttribute("obj", dtoBO);
+            return "dtoDoc";
+
+        } else {
+
+            SavePostBO savePostBO = openFile(fileStr);
+            List<String> dtoList = getDtoList(dirName);
+            savePostBO.setReturnTypeStr(HtmlUtil.strToHtml(savePostBO.getReturnTypeStr()));
+            model.addAttribute("obj", savePostBO);
+
+            if (!StringUtils.isEmpty(savePostBO.getReturnTypeStr())) {
+                if ("ResponseInfo&lt;?&gt;".equals(savePostBO.getReturnTypeStr())) {
+                    savePostBO.setReturnTypeStr("");
+                    if (StringUtils.isEmpty(savePostBO.getReturnStr())) {
+                        savePostBO.setReturnTypeStr(SaveFacesService.LazyDesc);
+                    }
+                } else {
+                    String tmpStr = savePostBO.getReturnTypeStr().replace("ResponseInfo", "")
+
+                            .replace("List&lt;", "")
+                            .replace("&lt;", "")
+                            .replace("&gt;", "");
+                    if (dtoList.contains(tmpStr)) {
+                        savePostBO.setReturnTypeStr(addHtmlA(savePostBO.getReturnTypeStr(), savePostBO.getProjectName(), tmpStr));
+                    }
+                }
+
+            }
+            openDoEx(savePostBO, model, dtoList);
+            openDoRem(savePostBO.getId(),model);
+            return "faceDoc";
+        }
+    }
+
+    private String addHtmlA(String str, String projectName, String fileStr) {
+        String bfz5c = "%5C";
+        if (File.separator.equals("\\")) {
+        } else {
+            bfz5c = "%2F";
+        }
+        return "<a class=\"myabq\" href=\"javascript:;\" target=\"_blank\" a-href=\"/face/opendo?type=dto&fileStr=" + fileStr + bfz5c + fileStr + ".json&dirName=" + projectName + "\">" + str + "</a>";
+    }
+
+    public void openDoEx(SavePostBO savePostBO, Model model, List<String> dtoList) {
+        String param = savePostBO.getParameterRem();
+        List<ParameBO> list = new ArrayList();
+        if (!StringUtils.isEmpty(param)) {
+            String[] sArr = param.split("\r\n");
+            for (String s : sArr) {
+                String[] colArr = s.split("\t\t");
+                if (colArr.length >= 3) {
+                    ParameBO parameBO = new ParameBO(colArr[0], colArr[1], colArr[2], "");
+                    if (colArr.length > 3) {
+                        parameBO.setParameRem(colArr[3]);
+                    }
+                    String tmpType = baseTypeMap.get(parameBO.getParameType());
+                    //基础类型替换成中文
+                    if (!StringUtils.isEmpty(tmpType)) {
+                        parameBO.setParameType(tmpType);
+                    } else if (!CollectionUtils.isEmpty(dtoList) && dtoList.contains(parameBO.getParameType())) {
+
+                        parameBO.setParameType(addHtmlA(parameBO.getParameType(), savePostBO.getProjectName(), parameBO.getParameType()));
+                    }
+
+                    list.add(parameBO);
+                }
+            }
+        }
+        if (list.size() > 0) {
+            model.addAttribute("parameList", list);
+        } else {
+            if (StringUtils.isEmpty(savePostBO.getParameterRem())) {
+                savePostBO.setParameterRem("无");
+            }
+        }
+    }
+
+    public OpenDoDTO getMappingStr(String key) {
+        if (FileMap == null || StringUtils.isEmpty(key)) {
+            return null;
+        }
+        for (OpenDoDTO openDoDTO : FileMap) {
+            if (key.equals(openDoDTO.getId())) {
+                return openDoDTO;
+            }
+        }
+        return null;
+    }
 
     public String getHeadMenu() {
 //          <li class="layui-nav-item"><a href="">控制台</a></li>
@@ -168,6 +309,12 @@ public class SaveFacesService {
         return saveDo(savePostBO, "Default");
     }
 
+    public String saveFileMap() {
+        String json = JSONObject.toJSONString(FileMap);
+        FileUtils.strToFileUTF8(FileDirP + File.separator + FILE_MAP_NAME, json);
+        return "ok";
+    }
+
     public String saveDo(SavePostBO savePostBO, String dirName) {
         if (StringUtils.isEmpty(savePostBO.getName())) {
             log.info("saveDo异常 name不能为空");
@@ -179,8 +326,13 @@ public class SaveFacesService {
         String json = JSONObject.toJSONString(savePostBO);
         String name = savePostBO.getName();
         String fileName = path + File.separator + name + ".json";
-        FileUtils.strToFileUTF8(fileName, json);
+        saveFile(fileName, json, savePostBO.getId(), FileTypeEnum.api, savePostBO.getProjectName());
         return "ok";
+    }
+
+    private void saveFile(String fileName, String json, String id, FileTypeEnum type, String projectName) {
+        FileUtils.strToFileUTF8(fileName, json);
+        FileMap.add(new OpenDoDTO(id, fileName, type.toString(), projectName));
     }
 
     private static String fileNameDo(String filename) {
@@ -207,7 +359,7 @@ public class SaveFacesService {
         String json = JSONObject.toJSONString(dtoBO);
         String name = dtoBO.getName();
         String fileName = path + File.separator + name + ".json";
-        FileUtils.strToFileUTF8(fileName, json);
+        saveFile(fileName, json, dtoBO.getId(), FileTypeEnum.dto, dtoBO.getProjectName());
         return "ok";
     }
 
@@ -240,7 +392,11 @@ public class SaveFacesService {
      */
     public SavePostBO openFile(String fileStr, String dirName, String apiDir) {
         fileStr = MD5Utils.decodeUtf8(fileStr);
-        File file = new File(FileDirP + File.separator + dirName + apiDir + File.separator + fileStr);
+        return openFile(FileDirP + File.separator + dirName + apiDir + File.separator + fileStr);
+    }
+
+    public SavePostBO openFile(String fileStr) {
+        File file = new File(fileStr);
         if (file.exists()) {
             String fileS = FileUtils.FileUTF8ToStr(file);
             if (!StringUtils.isEmpty(fileS)) {
@@ -265,9 +421,13 @@ public class SaveFacesService {
         return null;
     }
 
-    public DtoBO openDtoFile(String fileStr, String dirName, String apiDir) {
+    public String fileStrDo(String fileStr, String dirName, String type) {
         fileStr = MD5Utils.decodeUtf8(fileStr);
-        File file = new File(FileDirP + File.separator + dirName + apiDir + File.separator + fileStr);
+        return (FileDirP + File.separator + dirName + type + File.separator + fileStr);
+    }
+
+    public DtoBO openDtoFile(String fileStr) {
+        File file = new File(fileStr);
         if (file.exists()) {
             String fileS = FileUtils.FileUTF8ToStr(file);
             if (!StringUtils.isEmpty(fileS)) {
@@ -463,6 +623,7 @@ public class SaveFacesService {
 
     public void batchGenerateDo(String path) {
         //过来的是一个源代码目录，里面有很多微服务
+        FileMap = new ArrayList<>();
         File dir = new File(path);
         File[] files = dir.listFiles();
         if (files == null) return;
@@ -471,6 +632,7 @@ public class SaveFacesService {
             doJavaFileDo(file);
             doJavaFileDoDto(file);
         }
+        saveFileMap();
         log.info("执行完毕。。。");
     }
 
@@ -842,7 +1004,7 @@ public class SaveFacesService {
             String tmpS = fileStr.substring(fori, fori + 1);
             if ("(".equals(tmpS) || "<".equals(tmpS)) {
                 leftK++;
-            } else if (")".equals(tmpS)|| ">".equals(tmpS)) {
+            } else if (")".equals(tmpS) || ">".equals(tmpS)) {
                 leftK--;
                 if (leftK <= 0) {
                     break;
@@ -979,5 +1141,71 @@ public class SaveFacesService {
             }
         }
         return;
+    }
+
+    public String readRem(String id, String key) {
+        OpenDoDTO openDoDTO = getMappingStr(id);
+        if (openDoDTO == null || StringUtils.isEmpty(openDoDTO.getPath())) {
+            return null;
+        }
+        JSONObject jsonObject = getOpenDoDTO(openDoDTO);
+        if (jsonObject == null) {
+            return null;
+        }
+
+        Object o = jsonObject.get(key);
+        if (o == null) {
+            return null;
+        }
+        return o.toString();
+    }
+
+    public Boolean writeRem(String id, String key, String content) {
+        OpenDoDTO openDoDTO = getMappingStr(id);
+        if (openDoDTO == null || StringUtils.isEmpty(openDoDTO.getPath())) {
+            return null;
+        }
+        JSONObject jsonObject = getOpenDoDTO(openDoDTO);
+        if (jsonObject == null) {
+            return null;
+        }
+        jsonObject.put(key, content);
+        String remFileName = getRemFileName(openDoDTO.getPath());
+        FileUtils.strToFileUTF8(remFileName,jsonObject.toJSONString());
+        return true;
+    }
+
+    private JSONObject getOpenDoDTO(OpenDoDTO openDoDTO) {
+        String remFileName = getRemFileName(openDoDTO.getPath());
+        String fileStr = FileUtils.FileUTF8ToStr(new File(remFileName));
+        JSONObject remPostDTO;
+        if (StringUtils.isEmpty(fileStr)) {
+            remPostDTO = new JSONObject();
+        } else {
+            remPostDTO = JSONObject.parseObject(fileStr);
+        }
+        return remPostDTO;
+    }
+
+    private String getRemFileName(String path) {
+        //逻辑就是  用全路径 进行md5 加密
+        String md5 = MD5Utils.md5(path);
+        String tmpStr = FileDirP + File.separator + "rem";
+        File file = new File(tmpStr);
+        if(!file.isDirectory()){
+            file.mkdirs();
+        }
+        return tmpStr + File.separator + md5 + ".txt";
+    }
+    private Boolean  openDoRem(String id,Model model){
+        OpenDoDTO openDoDTO = getMappingStr(id);
+        if (openDoDTO == null || StringUtils.isEmpty(openDoDTO.getPath())) {
+            return null;
+        }
+        JSONObject jsonObject = getOpenDoDTO(openDoDTO);
+        if(jsonObject != null ){
+            model.addAttribute("rem",jsonObject);
+        }
+        return true;
     }
 }
