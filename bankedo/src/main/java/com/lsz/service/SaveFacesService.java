@@ -93,7 +93,18 @@ public class SaveFacesService {
             model.addAttribute("obj", savePostBO);
 
             if (!StringUtils.isEmpty(savePostBO.getReturnTypeStr())) {
-                if ("ResponseInfo&lt;?&gt;".equals(savePostBO.getReturnTypeStr())) {
+                final String resStr = "ResponseInfo&lt;";
+                String typeStr = savePostBO.getReturnTypeStr();
+                if(typeStr.startsWith("ResponseInfo&lt;")){
+                    typeStr = typeStr.substring(resStr.length());
+                    String endStr = "&gt;";
+                    if(typeStr.endsWith(endStr)){
+                        typeStr = typeStr.substring(0,typeStr.length() -  endStr.length());
+                        savePostBO.setReturnTypeStr(typeStr);
+                    }
+                }
+
+                if ("?".equals(savePostBO.getReturnTypeStr())) {
                     savePostBO.setReturnTypeStr("");
                     if (StringUtils.isEmpty(savePostBO.getReturnStr())) {
                         savePostBO.setReturnStr(SaveFacesService.LazyDesc);
@@ -717,10 +728,23 @@ public class SaveFacesService {
         String fileStr = FileUtils.FileUTF8ToStr(file);
         if (StringUtils.isEmpty(fileStr)) return;
         final String keyVal = "Mapping(";
+        boolean RequestMethod_GET =false;
+        boolean RequestMethod_POST =false;
+
         int mappingPos1 = fileStr.indexOf(keyVal);
         if (mappingPos1 == -1) return;
         //原理：第一个 mapping 后面第一个引号的内容 就是控制器路径
         String classPathValue = getYinhao(fileStr, mappingPos1);
+
+        String mapHeadStr = getEnterRow(fileStr, mappingPos1);
+        if(!StringUtils.isEmpty(mapHeadStr)){
+            if(mapHeadStr.contains(".GET")){
+                RequestMethod_GET = true;
+            }
+            if(mapHeadStr.contains(".POST")){
+                RequestMethod_POST = true;
+            }
+        }
 
         int mapPos = mappingPos1 + keyVal.length();
         while (true) {
@@ -731,8 +755,29 @@ public class SaveFacesService {
                 break;
             }
             SavePostBO savePostBO = doJavaFileEx(fileStr, tmpMapPos, mapPos);
+
             mapPos = tmpMapPos + keyVal.length();
             if (savePostBO != null && !StringUtils.isEmpty(savePostBO.getName())) {
+                if(!"GET".equals(savePostBO.getMethod())){
+                    if(!RequestMethod_GET){
+                        RequestMethod_GET = true;
+                    }
+                }
+                if(!"POST".equals(savePostBO.getMethod())){
+                    if(!RequestMethod_POST){
+                        RequestMethod_POST = true;
+                    }
+                }
+                if(RequestMethod_GET){
+                    savePostBO.setMethod("GET");
+                }
+                if(RequestMethod_POST){
+                    if(RequestMethod_GET){
+                        savePostBO.setMethod("GET、POST");
+                    }else{
+                        savePostBO.setMethod("POST");
+                    }
+                }
                 String tmpUrl = classPathValue + savePostBO.getUrl();
                 tmpUrl = tmpUrl.replace("//", "/");//有个小Bug
 
@@ -1159,7 +1204,14 @@ public class SaveFacesService {
         }
         return o.toString();
     }
-
+    public SavePostBO tidGetSavePostBo(String tid){
+        OpenDoDTO openDoDTO = getMappingStr(tid);
+        if (openDoDTO == null || StringUtils.isEmpty(openDoDTO.getPath())) {
+            return null;
+        }
+        final SavePostBO savePostBO = openFile(openDoDTO.getPath());
+        return savePostBO;
+    }
     public Boolean writeRem(String id, String key, String content) {
         OpenDoDTO openDoDTO = getMappingStr(id);
         if (openDoDTO == null || StringUtils.isEmpty(openDoDTO.getPath())) {
