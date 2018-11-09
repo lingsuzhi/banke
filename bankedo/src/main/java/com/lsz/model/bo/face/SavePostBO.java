@@ -1,6 +1,5 @@
 package com.lsz.model.bo.face;
 
-import com.lsz.common.UuidUtil;
 import lombok.Data;
 
 import java.io.Serializable;
@@ -22,6 +21,6 @@ public class SavePostBO implements Serializable {
     private String describe;
     private String parameterRem;
     public SavePostBO(){
-        id = UuidUtil.shortUuid();
+
     }
 }

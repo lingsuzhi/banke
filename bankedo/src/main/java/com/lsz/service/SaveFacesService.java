@@ -5,6 +5,7 @@ import com.alibaba.fastjson.JSONObject;
 import com.lsz.common.FileUtils;
 import com.lsz.common.HtmlUtil;
 import com.lsz.common.MD5Utils;
+import com.lsz.common.UuidMd5;
 import com.lsz.dto.FileTypeEnum;
 import com.lsz.dto.OpenDoDTO;
 import com.lsz.dto.RemPostDTO;
@@ -323,15 +324,18 @@ public class SaveFacesService {
         savePostBO.setName(fileNameDo(savePostBO.getName()));
         String path = FileDirStr + File.separator + dirName;
         checkFilePath(path);
-        String json = JSONObject.toJSONString(savePostBO);
         String name = savePostBO.getName();
         String fileName = path + File.separator + name + ".json";
+        savePostBO.setId(UuidMd5.md5With22Bit(fileName));
+        String json = JSONObject.toJSONString(savePostBO);
+
         saveFile(fileName, json, savePostBO.getId(), FileTypeEnum.api, savePostBO.getProjectName());
         return "ok";
     }
 
     private void saveFile(String fileName, String json, String id, FileTypeEnum type, String projectName) {
         FileUtils.strToFileUTF8(fileName, json);
+        //写配置文件
         FileMap.add(new OpenDoDTO(id, fileName, type.toString(), projectName));
     }
 
@@ -356,9 +360,11 @@ public class SaveFacesService {
         dtoBO.setName(fileNameDo(dtoBO.getName()));
         String path = FileDirStr + File.separator + dirName;
         checkFilePath(path);
-        String json = JSONObject.toJSONString(dtoBO);
         String name = dtoBO.getName();
         String fileName = path + File.separator + name + ".json";
+        dtoBO.setId(UuidMd5.md5With22Bit(fileName));
+
+        String json = JSONObject.toJSONString(dtoBO);
         saveFile(fileName, json, dtoBO.getId(), FileTypeEnum.dto, dtoBO.getProjectName());
         return "ok";
     }
