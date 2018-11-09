@@ -56,9 +56,9 @@ public class FaceController {
         return "editFace";
     }
     @RequestMapping("/face.php")
-    public String face(@RequestParam String name, Model model) {
-        if (!StringUtils.isEmpty(name)) {
-            SavePostBO savePostBO = saveFacesService.getFileJsonPostBO(MD5Utils.decodeUtf8(name));
+    public String face(@RequestParam String tid, Model model) {
+        if (!StringUtils.isEmpty(tid)) {
+            SavePostBO savePostBO = saveFacesService.tidGetSavePostBo(tid);
             if (savePostBO == null) {
                 return null;
             }
@@ -135,13 +135,13 @@ public class FaceController {
     /**
      * 文档
      *
-     * @param name
+     * @param tid
      * @return
      */
     @RequestMapping("/docdo")
-    public void docdo(String name, HttpServletResponse response) {
-        if (!StringUtils.isEmpty(name)) {
-            SavePostBO savePostBO = saveFacesService.getFileJsonPostBO(MD5Utils.decodeUtf8(name));
+    public void docdo(String tid, HttpServletResponse response) {
+        if (!StringUtils.isEmpty(tid)) {
+            SavePostBO savePostBO = saveFacesService.tidGetSavePostBo(tid);
             if (savePostBO == null) {
                 return;
             }
@@ -183,8 +183,6 @@ public class FaceController {
             } catch (IOException e) {
                 e.printStackTrace();
             }
-
-
         }
     }
 

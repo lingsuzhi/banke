@@ -64,6 +64,7 @@
 
 </style>
 <body>
+<input type="hidden" id="tid" value="${(obj.id)!}" >
 <form class="layui-form" action="">
     <div style="margin-top: 50px ; margin-left: 60px;margin-right: 30px">
         <div style="float:left ; width: 80%">
@@ -167,8 +168,9 @@
                     &nbsp;&nbsp;${(obj.returnStr)!}
                 </h3>
 
-
-                <pre class="layui-code">${(rem.fhz)!}</pre>
+                <#if rem.fhz?? && (rem.fhz?length gt 0)>
+                    <pre class="layui-code">${(rem.fhz)!}</pre>
+                </#if>
             </div>
         </div>
     </div>
@@ -193,12 +195,12 @@
         });
     });
     $("#docbtn").click(function () {
-        window.location.href = "/face/docdo" + "?name=" + $("#name").val();
+        window.location.href = "/face/docdo" + "?tid=" + $("#tid").val();
         //    $.get("/face/docdo" + "?name=" + $("#name").val());
     });
     $("#testDobtn").click(function () {
 
-        window.location.href = "/face/face.php" + "?name=" + $("#name").val();
+        window.location.href = "/face/face.php" + "?tid=" + $("#tid").val();
         //    $.get("/face/docdo" + "?name=" + $("#name").val());
     });
 
@@ -212,10 +214,10 @@
     }
 
     function fenxiangDo() {
-        var id = "${(obj.id)!}";
+        var id = $("#tid").val();
         var url = "";
         if (id) {
-            url = window.location.host + "/z/" + id;
+            url ="http://" + window.location.host + "/z/" + id;
         } else {
             url = window.location.href;
         }
@@ -257,15 +259,18 @@
     });
 
     function editFace(key) {
-        var id = "${(obj.id)!}";
+        var id =  $("#tid").val();
 
         var href = "/face/editFace.php?key=" + key + "&id=" + id;
         layer.open({
             type: 2,
-            title: "0.0 写什么文档",
+            title: " >_< 满足前端一切需求~",
             //    closeBtn: 0,
             area: ['55%', '66%'],
-            content: href
+            content: href,
+            end:function(){
+                location.reload();
+            }
         });
     }
 

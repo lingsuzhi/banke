@@ -159,7 +159,7 @@
         var id = "${(obj.id)!}";
         var url = "";
         if (id) {
-            url = window.location.host + "/z/" + id;
+            url ="http://" + window.location.host + "/z/" + id;
         } else {
             url = window.location.href;
         }
