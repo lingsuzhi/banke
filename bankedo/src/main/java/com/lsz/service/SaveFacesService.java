@@ -100,7 +100,7 @@ public class SaveFacesService {
                     }
                 } else {
                     String tmpStr = savePostBO.getReturnTypeStr().replace("ResponseInfo", "")
-
+                            .replace("Page&lt;", "")
                             .replace("List&lt;", "")
                             .replace("&lt;", "")
                             .replace("&gt;", "");
