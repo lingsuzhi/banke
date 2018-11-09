@@ -1,5 +1,6 @@
 package com.lsz.common;
 
+import org.apache.commons.codec.digest.DigestUtils;
 import sun.misc.BASE64Encoder;
 
 import java.io.UnsupportedEncodingException;
@@ -40,5 +41,7 @@ public class MD5Utils {
         }
         return null;
     }
-
+    public static String md5(String str){
+        return DigestUtils.md5Hex(str);
+    }
 }

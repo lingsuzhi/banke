@@ -5,6 +5,8 @@ import com.lsz.common.MD5Utils;
 import com.lsz.common.MSWordPoi4;
 import com.lsz.common.SoaConnectionFactory;
 import com.lsz.common.soa.ResponseInfo;
+import com.lsz.dto.EditFaceDTO;
+import com.lsz.dto.OpenDoDTO;
 import com.lsz.model.bo.face.*;
 import com.lsz.service.SaveFacesService;
 import org.slf4j.Logger;
@@ -37,6 +39,22 @@ public class FaceController {
     @Autowired
     private SaveFacesService saveFacesService;
 
+    @RequestMapping("/writeRem")
+    @ResponseBody
+    public String writeRem(@RequestBody EditFaceDTO editFaceDTO) {
+        saveFacesService.writeRem(editFaceDTO.getId(),editFaceDTO.getKey(),editFaceDTO.getContent());
+        return "ok";
+    }
+    @RequestMapping("/editFace.php")
+    public String editFace(@RequestParam String key,@RequestParam  String id, Model model) {
+        model.addAttribute("id", id);
+        model.addAttribute("key", key);
+        String content = saveFacesService.readRem(id,key);
+        if(!StringUtils.isEmpty(content)){
+            model.addAttribute("content", content);
+        }
+        return "editFace";
+    }
     @RequestMapping("/face.php")
     public String face(@RequestParam String name, Model model) {
         if (!StringUtils.isEmpty(name)) {
@@ -45,7 +63,7 @@ public class FaceController {
                 return null;
             }
             model.addAttribute("obj", savePostBO);
-            openDoEx(savePostBO, model, null);
+            saveFacesService.openDoEx(savePostBO, model, null);
         }
         return "face";
     }
@@ -73,79 +91,8 @@ public class FaceController {
      */
     @RequestMapping("/opendo")
     public String opendo(@RequestParam String fileStr, @RequestParam String dirName, String type, Model model) {
-        model.addAttribute("pathName", MD5Utils.encodeUtf8(dirName + File.separator + "api" + File.separator + fileStr));
-        if ("dto".equals(type)) {
-            DtoBO dtoBO = saveFacesService.openDtoFile(fileStr, dirName, File.separator + "dto");
-
-            if (dtoBO != null && !CollectionUtils.isEmpty(dtoBO.getAttrList())) {
-                for (DtoAttrBO dtoAttrBO : dtoBO.getAttrList()) {
-                    dtoAttrBO.setTypeStr(HtmlUtil.strToHtml(dtoAttrBO.getTypeStr()));
-                }
-            }
-            if(dtoBO != null && StringUtils.isEmpty(dtoBO.getDescribe())){
-                dtoBO.setDescribe(SaveFacesService.LazyDesc);
-            }
-            model.addAttribute("obj", dtoBO);
-            return "dtoDoc";
-
-        } else {
-
-            SavePostBO savePostBO = saveFacesService.openFile(fileStr, dirName, File.separator + "api");
-            List<String> dtoList = saveFacesService.getDtoList(dirName);
-            savePostBO.setReturnTypeStr(HtmlUtil.strToHtml(savePostBO.getReturnTypeStr()));
-            model.addAttribute("obj", savePostBO);
-
-            if (!StringUtils.isEmpty(savePostBO.getReturnTypeStr())) {
-                String tmpStr = savePostBO.getReturnTypeStr().replace("ResponseInfo", "")
-                        .replace("Page&lt;", "")
-                        .replace("List&lt;", "")
-                        .replace("&lt;", "")
-                        .replace("&gt;", "");
-                if (dtoList.contains(tmpStr)) {
-                    savePostBO.setReturnTypeStr(addHtmlA(savePostBO.getReturnTypeStr(), savePostBO.getProjectName(), tmpStr));
-                }
-            }
-            openDoEx(savePostBO, model, dtoList);
-            return "faceDoc";
-        }
-    }
-
-    private String addHtmlA(String str, String projectName, String fileStr) {
-        String bfz5c = "%5C";
-        if (File.separator.equals("\\")) {
-        } else {
-            bfz5c = "%2F";
-        }
-        return "<a class=\"myabq\" href=\"javascript:;\" target=\"_blank\" a-href=\"/face/opendo?type=dto&fileStr=" + fileStr + bfz5c + fileStr + ".json&dirName=" + projectName + "\">" + str + "</a>";
-    }
-
-    private void openDoEx(SavePostBO savePostBO, Model model, List<String> dtoList) {
-        String param = savePostBO.getParameterRem();
-        List<ParameBO> list = new ArrayList();
-        if (!StringUtils.isEmpty(param)) {
-            String[] sArr = param.split("\r\n");
-            for (String s : sArr) {
-                String[] colArr = s.split("\t\t");
-                if (colArr.length >= 3) {
-                    ParameBO parameBO = new ParameBO(colArr[0], colArr[1], colArr[2], "");
-                    if (colArr.length > 3) {
-                        parameBO.setParameRem(colArr[3]);
-                    }
-                    if (!CollectionUtils.isEmpty(dtoList) && dtoList.contains(parameBO.getParameType())) {
-                        parameBO.setParameType(addHtmlA(parameBO.getParameType(), savePostBO.getProjectName(), parameBO.getParameType()));
-                    }
-
-                    list.add(parameBO);
-                }
-            }
-        }
-        if (list.size() > 0) {
-            model.addAttribute("parameList", list);
-        }else{
-            if(StringUtils.isEmpty(savePostBO.getParameterRem())){
-                savePostBO.setParameterRem("无");
-            }
-        }
+        fileStr = saveFacesService.fileStrDo(fileStr,dirName,File.separator +  type);
+        return saveFacesService.opendo(fileStr,dirName,type,model);
     }
 
     @PostMapping("/facetest")
