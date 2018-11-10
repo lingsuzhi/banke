@@ -95,9 +95,9 @@ layui.define(['jquery', 'element', 'nprogress', 'utils'], function(exports) {
                     '<div class="kit-tab-tool"><i class="fa fa-caret-down"></i></div>',
                     '<div class="kit-tab-tool-body layui-anim layui-anim-upbit">',
                     '<ul>',
-                    '<li class="kit-item" data-target="refresh">刷新当前选项卡</li>',
+                    '<li class="kit-item" data-target="shareAll">分享所有~</li>',
+                    '<li class="kit-item" data-target="configPhp">配置页面</li>',
                     '<li class="kit-line"></li>',
-                    '<li class="kit-item" data-target="closeCurrent">关闭当前选项卡</li>',
                     '<li class="kit-item" data-target="closeOther">关闭其他选项卡</li>',
                     '<li class="kit-line"></li>',
                     '<li class="kit-item" data-target="closeAll">关闭所有选项卡</li>',
@@ -169,6 +169,24 @@ layui.define(['jquery', 'element', 'nprogress', 'utils'], function(exports) {
                             });
                             that.tabChange(-1);
                             break;
+                        case 'configPhp'://配置页
+                            window.location.href='/config';
+                            break;
+                        case 'shareAll'://分享所有
+                            var ids = "";
+                            that._title.children('li[lay-id]').each(function() {
+                                var curId = $(this).attr('lay-id');
+                                if (curId != -1){
+                                    console.log(curId);
+                                    if(ids){
+                                        ids=ids + ",";
+                                    }
+                                    ids = ids + curId;
+                                }
+                            });
+                            url ="http://" + window.location.host + "/index?s=" + ids;
+                            copyUrl2(url);
+                            break;
                     }
                     _tool.click();
                 });
@@ -197,10 +215,10 @@ layui.define(['jquery', 'element', 'nprogress', 'utils'], function(exports) {
                 var currBoxHeight = $(that._parentElem).height(); //获取当前容器的高度
                 switch (_config.renderType) {
                     case renderType.page:
-                        $('.kit-tab .layui-tab-content').height(currBoxHeight - 13);
+                        $('.kit-tab .layui-tab-content').height(currBoxHeight - 43);
                         break;
                     case renderType.iframe:
-                        $('.kit-tab .layui-tab-content iframe').height(currBoxHeight - 17);
+                        $('.kit-tab .layui-tab-content iframe').height(currBoxHeight - 47);
                         break;
                 }
             }).resize();

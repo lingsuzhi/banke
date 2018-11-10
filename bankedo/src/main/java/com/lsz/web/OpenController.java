@@ -33,6 +33,7 @@ public class OpenController {
     private SaveFacesService saveFacesService;
 
 
+
     @RequestMapping("/z/{id}")
     public String openId(@PathVariable String id, Model model) {
 

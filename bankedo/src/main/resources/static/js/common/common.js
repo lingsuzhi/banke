@@ -1,4 +1,13 @@
-
+function copyUrl2(Url2) {
+    var oInput = document.createElement('textarea');
+    oInput.value = Url2;
+    document.body.appendChild(oInput);
+    oInput.select(); // 选择对象
+    document.execCommand("Copy"); // 执行浏览器复制命令
+    oInput.className = 'oInput';
+    oInput.style.display = 'none';
+    layer.msg('复制成功', {icon: 4});
+}
 function getRootPath(pPath){
 	var pathName = window.document.location.pathname;
 	var projectName = pathName.substring(1, pathName.substr(1).indexOf('/') + 1);

@@ -207,7 +207,9 @@ public class SaveFacesService {
         List<String> list = new ArrayList();
         for (File f : files) {
             if (f.isDirectory()) {
-                list.add(f.getName());
+                if(!"rem".equals(f.getName())){
+                    list.add(f.getName());
+                }
             }
         }
         File fileHead = new File(FileDirP + File.separator + "head.json");
@@ -340,14 +342,14 @@ public class SaveFacesService {
         savePostBO.setId(UuidMd5.md5With22Bit(fileName));
         String json = JSONObject.toJSONString(savePostBO);
 
-        saveFile(fileName, json, savePostBO.getId(), FileTypeEnum.api, savePostBO.getProjectName());
+        saveFile(fileName, json, savePostBO.getId(),savePostBO.getName(), FileTypeEnum.api, savePostBO.getProjectName());
         return "ok";
     }
 
-    private void saveFile(String fileName, String json, String id, FileTypeEnum type, String projectName) {
+    private void saveFile(String fileName, String json, String id, String name, FileTypeEnum type, String projectName) {
         FileUtils.strToFileUTF8(fileName, json);
         //写配置文件
-        FileMap.add(new OpenDoDTO(id, fileName, type.toString(), projectName));
+        FileMap.add(new OpenDoDTO(id,name, fileName, type.toString(), projectName));
     }
 
     private static String fileNameDo(String filename) {
@@ -376,7 +378,7 @@ public class SaveFacesService {
         dtoBO.setId(UuidMd5.md5With22Bit(fileName));
 
         String json = JSONObject.toJSONString(dtoBO);
-        saveFile(fileName, json, dtoBO.getId(), FileTypeEnum.dto, dtoBO.getProjectName());
+        saveFile(fileName, json, dtoBO.getId(),dtoBO.getName(), FileTypeEnum.dto, dtoBO.getProjectName());
         return "ok";
     }
 
@@ -555,7 +557,38 @@ public class SaveFacesService {
         }
         return null;
     }
+    public List<LayuiNavbarBO> getLeftMenu(String leftMenu){
+        List<LayuiNavbarBO> list = new LinkedList<>();
+        String[] menuArr = leftMenu.split(",");
+        if(menuArr == null || menuArr.length ==0){
+            return list;
+        }
+        LayuiNavbarBO layuiNavbarBO = new LayuiNavbarBO();
+        layuiNavbarBO.setId(UuidMd5.uuidWith8Bit());
+        layuiNavbarBO.setIcon("fa-cubes");
+        layuiNavbarBO.setSpread(true);
+        layuiNavbarBO.setTitle("接口了解一下~");
+        list.add(layuiNavbarBO);
 
+        for (String menu :menuArr){
+            LayuiNavbarBO bo = new LayuiNavbarBO();
+            bo.setId(menu);
+            bo.setIcon("fa-stop-circle");
+            bo.setSpread(true);
+
+            OpenDoDTO openDoDTO = getMappingStr(bo.getId());
+            if(openDoDTO != null){
+                bo.setUrl("z/"+ menu);
+                bo.setTitle(openDoDTO.getName());
+                layuiNavbarBO.getChildren().add(bo);
+
+            }
+        }
+        return list;
+    }
+    public String getFilePath(String proJectName,String type,String fileStr){
+        return FileDirP + File.separator + proJectName + File.separator + type+ File.separator + fileStr;
+    }
     public List<LayuiNavbarBO> getNavbar(String dirName, String typeName) {
         File dir = new File(FileDirP + File.separator + dirName + File.separator + typeName);
         List<LayuiNavbarBO> list = new LinkedList<>();
@@ -602,19 +635,12 @@ public class SaveFacesService {
                         layuiNavbarBO2.setSpread(true);
                         layuiNavbarBO2.setTitleEx(file2.getName());
                         layuiNavbarBO2.setIcon("fa-stop-circle");
-                        layuiNavbarBO2.setId(dirName + String.valueOf(id) + typeName);
+                        String fileFullName = getFilePath(dirName,typeName,fileStr);
+
+                        layuiNavbarBO2.setId(UuidMd5.md5With22Bit(fileFullName));
                         layuiNavbarBO.getChildren().add(layuiNavbarBO2);
                     }
-
                 }
-
-            } else {
-                layuiNavbarBO.setUrl("face/opendo?type=" + typeName + "&fileStr=" + MD5Utils.encodeUtf8(file.getName()));
-                layuiNavbarBO.setSpread(true);
-                layuiNavbarBO.setTitleEx(file.getName());
-                layuiNavbarBO.setIcon("fa-stop-circle");
-                layuiNavbarBO.setId(dirName + String.valueOf(id) + typeName);
-                //layuiNavbarBO.setChildren(null);
             }
 
             list.add(layuiNavbarBO);

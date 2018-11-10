@@ -6,6 +6,7 @@ import com.lsz.service.SaveFacesService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -29,10 +30,15 @@ public class IndexController {
     @Autowired
     private SaveFacesService saveFacesService;
 
-    @RequestMapping("/index.php")
-    public String index(Model model,String proName) {
+    @RequestMapping("/index")
+    public String index(Model model,String proName,String s) {
         model.addAttribute("headMenu", saveFacesService.getHeadMenu());
-        model.addAttribute("proName", proName);
+        if(!StringUtils.isEmpty(s)){
+            model.addAttribute("proName", "lsz");
+            model.addAttribute("leftMenu",s);
+        }else{
+            model.addAttribute("proName", proName);
+        }
 
         return "index";
     }
@@ -42,16 +48,25 @@ public class IndexController {
         return "test1";
     }
 
-    @RequestMapping("/main.htm")
-    public String mainhtm(Model model) {
+    @RequestMapping("/config")
+    public String config(Model model) {
         String defUrl = "/wls/api/code";
         if (File.separator.equals("\\")) {
             defUrl = "d:\\source";
         }
         model.addAttribute("defUrl",defUrl);
+        return "config";
+    }
+    @RequestMapping("/main.htm")
+    public String mainhtm(Model model) {
+
         return "main";
     }
-
+    @RequestMapping("/datas/navbarLeftMenu")
+    @ResponseBody
+    public List<LayuiNavbarBO> navbarLeftMenu(@RequestParam String leftMenu) {
+        return saveFacesService.getLeftMenu(leftMenu);
+    }
     @RequestMapping("/datas/navbar1")
     @ResponseBody
     public List<LayuiNavbarBO> navbar1(@RequestParam String dirName) {
