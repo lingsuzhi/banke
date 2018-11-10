@@ -209,6 +209,7 @@
                                  style="animation-duration: 5s;" data-anim="layui-anim-rotate">
                                 <img   id="donghuaImg" class="layui-nav-img"
                                      style="width: 100%;height: 100%"></div>
+                            <h3 id="donghuaMsg"></h3>
                         </li>
                         <li >
 
@@ -228,10 +229,13 @@
       $(function(){
           var rand = Math.floor(Math.random()*10);  //可均衡获取0到9的随机整数。
           var src = "${ctx}/images/";
-          if(rand>=5){
-              src="${ctx}/images/xztp2.png";
+          if(rand<3){
+              src =src + "xztp2.png";
+          }else if(rand<6){
+              src =src + "tyh.png";
           }else{
-              src="${ctx}/images/xztp.png";
+              src =src + "xztp.png";
+              $("#donghuaMsg").html('我叫单身狗');
           }
           $("#donghuaImg").attr("src",src);
       });
