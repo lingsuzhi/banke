@@ -142,20 +142,20 @@
                                                 <li class="layui-col-xs6">
                                                     <a lay-href="app/content/comment.html"
                                                        class="layadmin-backlog-body">
-                                                        <h3>待审评论</h3>
+                                                        <h3>待开发</h3>
                                                         <p><cite>66</cite></p>
                                                     </a>
                                                 </li>
                                                 <li class="layui-col-xs6">
                                                     <a lay-href="app/forum/list.html" class="layadmin-backlog-body">
-                                                        <h3>待审帖子</h3>
+                                                        <h3>待部署</h3>
                                                         <p><cite>12</cite></p>
                                                     </a>
                                                 </li>
                                                 <li class="layui-col-xs6">
                                                     <a lay-href="template/goodslist.html" class="layadmin-backlog-body">
-                                                        <h3>待审商品</h3>
-                                                        <p><cite>99</cite></p>
+                                                        <h3>待测试</h3>
+                                                        <p><cite style="color: #FF5722;">19</cite></p>
                                                     </a>
                                                 </li>
                                                 <li class="layui-col-xs6">
@@ -170,7 +170,7 @@
                                                 <li class="layui-col-xs6">
                                                     <a href="javascript:;" class="layadmin-backlog-body">
                                                         <h3>待审友情链接</h3>
-                                                        <p><cite style="color: #FF5722;">5</cite></p>
+                                                        <p><cite >5</cite></p>
                                                     </a>
                                                 </li>
                                             </ul>
