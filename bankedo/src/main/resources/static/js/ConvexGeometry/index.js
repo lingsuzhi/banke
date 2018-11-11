@@ -83,4 +83,4 @@ update(0);
 
 setTimeout(function(){
     canvas.style.visibility="";
-}, 1000);
+}, 1);
