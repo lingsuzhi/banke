@@ -8,12 +8,18 @@
 <link rel="stylesheet" href="${ctx}/src/css/admin.css" media="all"/>
 <link rel="stylesheet" href="${ctx}/src/css/themes/default.css" media="all" id="skin" kit-skin/>
 <script src="${ctx}/plugins/layui/layui.js"></script>
+
+<#--<link href="${ctx}/plugins/sideshow/css/normalize.css" rel="stylesheet" />-->
+<#--<link href="${ctx}/plugins/sideshow/css/demo.css" rel="stylesheet" />-->
+<#--<link href="${ctx}/plugins/sideshow/css/component.css" rel="stylesheet" />-->
+
 <head>
     <style>
         .donghua li {
             float: left;
             list-style: none;
-            width: 300px;
+            width: 330px;
+            height: 330px;
             margin-left: 30px;
             margin-bottom: 20px;
         }
@@ -170,7 +176,7 @@
                                                 <li class="layui-col-xs6">
                                                     <a href="javascript:;" class="layadmin-backlog-body">
                                                         <h3>待审友情链接</h3>
-                                                        <p><cite >5</cite></p>
+                                                        <p><cite>5</cite></p>
                                                     </a>
                                                 </li>
                                             </ul>
@@ -203,15 +209,16 @@
                 </div>
                 <div class="layui-col-md4">
 
-                    <ul class="donghua" style="width: 400px; height: 100px;text-align: center">
-                        <li >
+                    <ul class="donghua" style="text-align: center">
+                        <li>
                             <div class="layui-anim layui-anim-rotate layui-anim-loop"
                                  style="animation-duration: 5s;" data-anim="layui-anim-rotate">
-                                <img   id="donghuaImg" class="layui-nav-img"
+                                <img id="donghuaImg" class="layui-nav-img"
                                      style="width: 100%;height: 100%"></div>
                             <h3 id="donghuaMsg"></h3>
                         </li>
-                        <li >
+                        <li>
+                            <canvas id="zuanshi" dh-color='#ff0000'></canvas>
 
                         </li>
                     </ul>
@@ -221,24 +228,29 @@
             </div>
         </div>
 
-
 </body>
 </html>
 
   <script>
-      $(function(){
-          var rand = Math.floor(Math.random()*10);  //可均衡获取0到9的随机整数。
+      function donghuaInit() {
+          var rand = Math.floor(Math.random() * 10);  //可均衡获取0到9的随机整数。
           var src = "${ctx}/images/";
-          if(rand<3){
-              src =src + "xztp2.png";
-          }else if(rand<6){
-              src =src + "tyh.png";
-          }else{
-              src =src + "xztp.png";
+          var zuanshiCor = '';
+          if (rand < 3) {
+              src = src + "xztp2.png";
+              zuanshiCor= '#ff00ff';
+          } else if (rand < 6) {
+              src = src + "tyh.png";
+              zuanshiCor= '#0000ff';
+          } else {
+              zuanshiCor= '#00ffff';
+              src = src + "xztp.png";
               $("#donghuaMsg").html('我叫单身狗');
           }
-          $("#donghuaImg").attr("src",src);
-      });
+
+          $("#zuanshi").attr("dh-color",zuanshiCor);
+          $("#donghuaImg").attr("src", src);
+      }
 
       layui.use('carousel', function () {
           var carousel = layui.carousel;
@@ -274,85 +286,7 @@
       layui.config({
           base: '/lsz/js/'
       });
-      // layui.use("echarts",function () {
-      //
-      //
-      //     var myChart = layui.echarts;
-      //     option = {
-      //         tooltip: {
-      //             trigger: 'axis'
-      //         },
-      //         legend: {
-      //             data:['邮件营销','联盟广告','视频广告','直接访问','搜索引擎']
-      //         },
-      //         grid: {
-      //             left: '3%',
-      //             right: '4%',
-      //             bottom: '3%',
-      //             containLabel: true
-      //         },
-      //         toolbox: {
-      //             feature: {
-      //                 saveAsImage: {}
-      //             }
-      //         },
-      //         xAxis: {
-      //             type: 'category',
-      //             boundaryGap: false,
-      //             data: ['周一','周二','周三','周四','周五','周六','周日']
-      //         },
-      //         yAxis: {
-      //
-      //             type: 'value'
-      //         },
-      //         series: [
-      //             {
-      //                 name:'邮件营销',
-      //                 type:'line',
-      //                 stack: '总量',
-      //                 data:[120, 132, 101, 134, 90, 230, 210]
-      //             },
-      //             {
-      //                 name:'联盟广告',
-      //                 type:'line',
-      //                 stack: '总量',
-      //                 data:[220, 182, 191, 234, 290, 330, 310]
-      //             },
-      //             {
-      //                 name:'视频广告',
-      //                 type:'line',
-      //                 stack: '总量',
-      //                 data:[150, 232, 201, 154, 190, 330, 410]
-      //             },
-      //             {
-      //                 name:'直接访问',
-      //                 type:'line',
-      //                 stack: '总量',
-      //                 data:[320, 332, 301, 334, 390, 330, 320]
-      //             },
-      //             {
-      //                 name:'搜索引擎',
-      //                 type:'line',
-      //                 stack: '总量',
-      //                 data:[820, 932, 901, 934, 1290, 1330, 1320]
-      //             }
-      //         ]
-      //     };
-      //     // 使用刚指定的配置项和数据显示图表。
-      //
-      //     myChart.setOption(option);
-      //     //弹出一个页面层
-      //     $('#test2').on('click', function() {
-      //         layer.open({
-      //             title:'hello world',
-      //             type: 1,
-      //             shade: false,
-      //             area: ['620px', '460px'],
-      //             shadeClose: false, //点击遮罩关闭
-      //             content: $("#speedChart")
-      //         });
-      //     });
-      // });
+
       layui.use(["carousel", "echarts"], function () {
           var e = layui.$
                   , a = layui.carousel
@@ -490,7 +424,10 @@
               // })
           }
       });
+donghuaInit();
   </script>
 
+                            <script src='js/ConvexGeometry/three.min.js'></script>
+                            <script src='js/ConvexGeometry/ConvexGeometry.js'></script>
 
-
+                            <script src="js/ConvexGeometry/index.js"></script>
