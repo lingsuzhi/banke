@@ -1,6 +1,5 @@
 package com.lsz.model.bo.face;
 
-import com.lsz.common.UuidUtil;
 import lombok.Data;
 
 import java.util.ArrayList;
@@ -18,6 +17,6 @@ public class DtoBO {
     private String name;
 
     public DtoBO() {
-        id = UuidUtil.shortUuid();
+
     }
 }

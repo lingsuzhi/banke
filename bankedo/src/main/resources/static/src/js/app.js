@@ -112,15 +112,20 @@ layui.define(['element', 'nprogress', 'form', 'table', 'loader', 'tab', 'navbar'
             type: 'iframe'
         },
         findUrl: "",
-        funSetMenu: function (name) {
-
+        funSetMenu: function (name, leftMenu) {
+            var url = "";
+            if (leftMenu) {
+                url = '/datas/navbarLeftMenu?leftMenu=' + leftMenu;
+            } else {
+                url = '/datas/navbar1?dirName=' + name;
+                if (app.dtoB) {
+                    url = '/datas/navbarDto?dirName=' + name;
+                }
+                setCookie("c_dirName", name, 7);
+            }
             $("#proName").html(name);
             app.projectName = name;
-            var url = '/datas/navbar1?dirName=' + name;
-            if (app.dtoB) {
-                url = '/datas/navbarDto?dirName=' + name;
-            }
-            setCookie("c_dirName", name, 7);
+
             navbar.set({
                 remote: {
                     url: url
@@ -196,9 +201,9 @@ layui.define(['element', 'nprogress', 'form', 'table', 'loader', 'tab', 'navbar'
                 // });
                 // navbar加载方式二，设置远程地址加载
                 var dirName = $("#proNameHide").val();
-                if(dirName){
+                if (dirName) {
 
-                }else{
+                } else {
                     dirName = getCookie("c_dirName");
                 }
                 if (dirName) {
@@ -213,7 +218,7 @@ layui.define(['element', 'nprogress', 'form', 'table', 'loader', 'tab', 'navbar'
                 // }).render(function(data) {
                 //     tab.tabAdd(data);
                 // });
-                app.funSetMenu(dirName);
+                app.funSetMenu(dirName,$("#leftMenu").val());
                 //navbar加载方式三，设置data本地数据
                 // navbar.set({
                 //     data: [{
