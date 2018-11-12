@@ -758,15 +758,18 @@ public class SaveFacesService {
 
             mapPos = tmpMapPos + keyVal.length();
             if (savePostBO != null && !StringUtils.isEmpty(savePostBO.getName())) {
-                if(!"GET".equals(savePostBO.getMethod())){
-                    if(!RequestMethod_GET){
+//                if("/updateMsgStatus".equals(savePostBO.getUrl())){
+//                    System.out.println(111);
+//                }
+                if("GET".equals(savePostBO.getMethod())){
+
                         RequestMethod_GET = true;
-                    }
+
                 }
-                if(!"POST".equals(savePostBO.getMethod())){
-                    if(!RequestMethod_POST){
+                if("POST".equals(savePostBO.getMethod())){
+
                         RequestMethod_POST = true;
-                    }
+
                 }
                 if(RequestMethod_GET){
                     savePostBO.setMethod("GET");

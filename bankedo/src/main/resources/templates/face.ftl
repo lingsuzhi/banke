@@ -44,13 +44,13 @@
     </div>
     <div>
         地址：<input id="url" style="width:550px;" value="http://pxy-disp-sit2.banketech.com${(obj.url)!}"/>
-        &nbsp<input type="button" id="okbtn" class="layui-btn   layui-btn-sm"  value="测 试"/>
+        &nbsp<input type="button" id="okbtn" class="layui-btn   layui-btn-sm" value="测 试"/>
 
     </div>
     <div style="float: left">
 
         <div style="width: 650px; float: left">
-            <div style="float: left"> <input id="tokenId" type="button" value="token"></div>
+            <div style="float: left"><input id="tokenId" type="button" value="token"></div>
 
             <fieldset>
 
@@ -68,8 +68,11 @@
 
             </fieldset>
             <div>参数</div>
-            <textarea id="sendtxt" style="width:100%;height:600px"><#list parameList as listObj>${(listObj.parameName)!}=
-            </#list>
+            <textarea id="sendtxt" style="width:100%;height:600px">
+            <#if parameList??>
+                <#list parameList as listObj>${(listObj.parameName)!}=
+                </#list>
+            </#if>
              </textarea>
 
 
@@ -77,15 +80,13 @@
         <div style="float: left">
             <div>返回值</div>
 
-                <textarea id="returntxt" style="width:600px;height:680px">${(obj.returnStr)!}</textarea>
+            <textarea id="returntxt" style="width:600px;height:680px">${(obj.returnStr)!}</textarea>
 
         </div>
     </div>
 </div>
 </body>
 </html>
-
-
 
 
 <script>
@@ -121,9 +122,9 @@
 
                 var divNew = div.parent().children("[data-id=" + 2 + "]");
 
-                if(divNew ){
+                if (divNew) {
                     var txt = divNew.children(".txtkey").val();
-                    if(txt==""){
+                    if (txt == "") {
                         divNew.remove();
                     }
                 }
@@ -321,7 +322,7 @@
                 var tmpJson = JSON.stringify(data, null, 4);
                 $("#returntxt").val(tmpJson);
                 console.log(data);
-            },error: function (data) {
+            }, error: function (data) {
                 $("#returntxt").val(data.responseJson);
                 console.log(data);
             },
@@ -334,7 +335,7 @@
 
         $.ajax(post);
     }
-    $("#tokenId").click(function(){
+    $("#tokenId").click(function () {
         $(".txtkey").val("Authorization");
         $(".txtvalue").val("UEBnbDFTZFhlcWhvNGtPRlRaRUhYQ0Z1");
     })

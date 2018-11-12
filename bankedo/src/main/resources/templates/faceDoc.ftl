@@ -264,9 +264,9 @@
         var href = "/face/editFace.php?key=" + key + "&id=" + id;
         layer.open({
             type: 2,
-            title: " >_< 满足前端一切需求~",
+            title: "0.0 满足前端一切需求~",
             //    closeBtn: 0,
-            area: ['55%', '66%'],
+            area: ['55%', '75%'],
             content: href,
             end:function(){
                 location.reload();
