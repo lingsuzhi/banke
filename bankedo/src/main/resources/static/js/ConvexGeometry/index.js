@@ -2,8 +2,8 @@
 
 var canvas = document.querySelector("canvas");
 
-var w = 330;
-var h = 330;
+var w = 300;
+var h = 300;
 var zuanshiCor = canvas.getAttribute("dh-color");
 canvas.style.visibility="hidden";
 

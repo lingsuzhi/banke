@@ -18,8 +18,8 @@
         .donghua li {
             float: left;
             list-style: none;
-            width: 330px;
-            height: 330px;
+            width: 300px;
+            height: 300px;
             margin-left: 30px;
             margin-bottom: 20px;
         }
@@ -427,7 +427,7 @@
 donghuaInit();
   </script>
 
-                            <script src='js/ConvexGeometry/three.min.js'></script>
-                            <script src='js/ConvexGeometry/ConvexGeometry.js'></script>
+                            <#--<script src='js/ConvexGeometry/three.min.js'></script>-->
+                            <#--<script src='js/ConvexGeometry/ConvexGeometry.js'></script>-->
 
-                            <script src="js/ConvexGeometry/index.js"></script>
+                            <#--<script src="js/ConvexGeometry/index.js"></script>-->

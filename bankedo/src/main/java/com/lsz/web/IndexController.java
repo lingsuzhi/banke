@@ -30,7 +30,13 @@ public class IndexController {
     @Autowired
     private SaveFacesService saveFacesService;
 
-    @RequestMapping("/index")
+    @RequestMapping("/")
+    public String indexDo(Model model,String proName,String s) {
+        return index(model,proName,s);
+    }
+
+
+        @RequestMapping("/index")
     public String index(Model model,String proName,String s) {
         model.addAttribute("headMenu", saveFacesService.getHeadMenu());
         if(!StringUtils.isEmpty(s)){
