@@ -3,7 +3,10 @@ package com.lsz.web;
 import com.lsz.common.soa.ResponseInfo;
 import com.lsz.model.bo.LayuiNavbarBO;
 import com.lsz.service.SaveFacesService;
+import org.jasypt.encryption.pbe.config.StringPBEConfig;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpRequest;
+import org.springframework.http.RequestEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.util.StringUtils;
@@ -12,6 +15,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
 
+import javax.servlet.http.HttpServletRequest;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
@@ -25,19 +29,19 @@ import java.util.List;
  */
 @Controller
 public class IndexController {
-
+    StringPBEConfig stringPBEConfig;
 
     @Autowired
     private SaveFacesService saveFacesService;
 
     @RequestMapping("/")
     public String indexDo(Model model,String proName,String s) {
-        return index(model,proName,s);
+        return index(model,proName,s,null);
     }
 
 
         @RequestMapping("/index")
-    public String index(Model model,String proName,String s) {
+    public String index(Model model, String proName, String s, HttpServletRequest httpRequest) {
         model.addAttribute("headMenu", saveFacesService.getHeadMenu());
         if(!StringUtils.isEmpty(s)){
             model.addAttribute("proName", "lsz");
