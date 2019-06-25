@@ -20,6 +20,8 @@ import java.nio.file.Paths;
 import java.nio.file.StandardOpenOption;
 import java.util.List;
 
+import static com.lsz.service.SaveFacesService.ApiDir;
+
 /**
  * Created by ex-lingsuzhi on 2018/3/20.
  */
@@ -30,7 +32,7 @@ public class IndexController {
     @Autowired
     private SaveFacesService saveFacesService;
 
-    @RequestMapping("/index")
+    @RequestMapping({"/index","/"})
     public String index(Model model,String proName,String s) {
         model.addAttribute("headMenu", saveFacesService.getHeadMenu());
         if(!StringUtils.isEmpty(s)){
@@ -71,7 +73,7 @@ public class IndexController {
     @ResponseBody
     public List<LayuiNavbarBO> navbar1(@RequestParam String dirName) {
 
-        return saveFacesService.getNavbar(dirName,"api");
+        return saveFacesService.getNavbar(dirName,ApiDir);
     }
     @RequestMapping("/datas/navbarDto")
     @ResponseBody
