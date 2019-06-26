@@ -63,7 +63,7 @@ public class FaceController {
                 return null;
             }
             model.addAttribute("obj", savePostBO);
-            saveFacesService.openDoEx(savePostBO, model, null);
+            saveFacesService.openDoEx(savePostBO, model);
         }
         return "face";
     }

@@ -154,7 +154,7 @@ public class SaveFacesService {
                 for (File file2 : files) {
                     if (file2.isDirectory()) {
 //                        System.out.println("文件夹:" + file2.getAbsolutePath());
-                        if (dirName.equals(file2.getName())) {
+                        if (dirName.equalsIgnoreCase(file2.getName())) {
                             fileList.add(file2);
                         }
                         if ("mobile".equals(file2.getName()) || "test".equals(file2.getName()) || "resources".equals(file2.getName())) {
@@ -195,7 +195,7 @@ public class SaveFacesService {
         } else {
 
             SavePostBO savePostBO = openFile(fileStr);
-            List<String> dtoList = getDtoList(dirName);
+            List<OpenDoDTO> dtoList = getDtoList(dirName);
             savePostBO.setReturnTypeStr(HtmlUtil.strToHtml(savePostBO.getReturnTypeStr()));
             model.addAttribute("obj", savePostBO);
 
@@ -217,18 +217,24 @@ public class SaveFacesService {
                         savePostBO.setReturnStr(SaveFacesService.LazyDesc);
                     }
                 } else {
-                    String tmpStr = savePostBO.getReturnTypeStr().replace("ResponseInfo", "")
+                    String tmpStr = savePostBO.getReturnTypeStr()
+                            .replace("Result", "")
+                            .replace("ResponseInfo", "")
+                            .replace("IPage&lt;", "")
                             .replace("Page&lt;", "")
                             .replace("List&lt;", "")
                             .replace("&lt;", "")
                             .replace("&gt;", "");
-                    if (dtoList.contains(tmpStr)) {
-                        savePostBO.setReturnTypeStr(addHtmlA(savePostBO.getReturnTypeStr(), savePostBO.getProjectName(), tmpStr));
+                    for (OpenDoDTO openDoDTO :dtoList){
+                        if (tmpStr.equals(openDoDTO.getName())){
+                            savePostBO.setReturnTypeStr(addHtmlA(savePostBO.getReturnTypeStr(), openDoDTO.getProjectName(), tmpStr));
+                            break;
+                        }
                     }
                 }
 
             }
-            openDoEx(savePostBO, model, dtoList);
+            openDoEx(savePostBO, model);
             openDoRem(savePostBO.getId(), model);
             return "faceDoc";
         }
@@ -243,31 +249,58 @@ public class SaveFacesService {
         return "<a class=\"myabq\" href=\"javascript:;\" target=\"_blank\" a-href=\"/face/opendo?type=dto&fileStr=" + fileStr + bfz5c + fileStr + ".json&dirName=" + projectName + "\">" + str + "</a>";
     }
 
-    public void openDoEx(SavePostBO savePostBO, Model model, List<String> dtoList) {
+    private boolean dtoManger(SavePostBO savePostBO, String dto, List<ParameBO> list) {
+//        if (savePostBO.getMethod().contains("POST")) {
+//            if (dto.equals("SysNetworkDTO")){
+//                System.out.println(1);
+//            }
+        for (OpenDoDTO openDoDTO : FileMap) {
+            if (dto.equals(openDoDTO.getName())) {
+                System.out.println(1);
+                DtoBO dtoBO = openDtoFile(openDoDTO.getPath());
+                if (dtoBO != null && !CollectionUtils.isEmpty(dtoBO.getAttrList())) {
+                    for (DtoAttrBO dtoAttrBO : dtoBO.getAttrList()) {
+                        list.add(new ParameBO(dtoAttrBO.getNameStr(), dtoAttrBO.getParameRequired(), dtoAttrBO.getTypeStr(), dtoAttrBO.getRemStr()));
+                    }
+                }
+                return true;
+
+            }
+        }
+//        }
+        return false;
+    }
+
+    public void openDoEx(SavePostBO savePostBO, Model model) {
         String param = savePostBO.getParameterRem();
         List<ParameBO> list = new ArrayList();
         if (!StringUtils.isEmpty(param)) {
             String[] sArr = param.split("\r\n");
+
+
             for (String s : sArr) {
                 String[] colArr = s.split("\t\t");
                 if (colArr.length >= 3) {
-                    ParameBO parameBO = new ParameBO(colArr[0], colArr[1], colArr[2], "");
-                    if (colArr.length > 3) {
-                        parameBO.setParameRem(colArr[3]);
-                    }
-                    String tmpType = baseTypeMap.get(parameBO.getParameType());
-                    //基础类型替换成中文
-                    if (!StringUtils.isEmpty(tmpType)) {
-                        parameBO.setParameType(tmpType);
-                    } else if (!CollectionUtils.isEmpty(dtoList) && dtoList.contains(parameBO.getParameType())) {
+                    //把DTO 映射过来
+                    if (sArr.length == 1 && dtoManger(savePostBO, colArr[2], list)) {
 
-                        parameBO.setParameType(addHtmlA(parameBO.getParameType(), savePostBO.getProjectName(), parameBO.getParameType()));
-                    }
+                    } else {
+                        ParameBO parameBO = new ParameBO(colArr[0], colArr[1], colArr[2], "");
+                        if (colArr.length > 3) {
+                            parameBO.setParameRem(colArr[3]);
+                        }
+                        String tmpType = baseTypeMap.get(parameBO.getParameType());
+                        //基础类型替换成中文
+                        if (!StringUtils.isEmpty(tmpType)) {
+                            parameBO.setParameType(tmpType);
+                        }
 
-                    list.add(parameBO);
+                        list.add(parameBO);
+                    }
                 }
             }
         }
+
         if (list.size() > 0) {
             model.addAttribute("parameList", list);
         } else {
@@ -519,18 +552,17 @@ public class SaveFacesService {
         return null;
     }
 
-    public List<String> getDtoList(String dirName) {
-        List<String> list = new ArrayList<>();
-        File file = new File(FileDirP + File.separator + dirName + File.separator + "dto");
-        if (file.exists()) {
-            File[] files = file.listFiles();
-            for (File f : files) {
-                list.add(f.getName());
+    public List<OpenDoDTO> getDtoList(String dirName) {
+        List<OpenDoDTO> list = new ArrayList<>();
 
+        for (OpenDoDTO f : FileMap) {
+            if ("dto".equals(f.getType())) {
+                list.add(f);
             }
-            return list;
+
         }
-        return new ArrayList<>();
+        return list;
+
     }
 
     public String fileStrDo(String fileStr, String dirName, String type) {
@@ -780,6 +812,8 @@ public class SaveFacesService {
             return;
         }
         List<File> fileList = findPath(file.getAbsolutePath(), "dto");
+        List<File> fileVoList = findPath(file.getAbsolutePath(), "vo");
+        fileList.addAll(fileVoList);
         if (CollectionUtils.isEmpty(fileList)) {
             log.info("路径:{} 找不到dto目录", file.getAbsolutePath());
             return;
@@ -1030,7 +1064,7 @@ public class SaveFacesService {
                     if (tmpS.length() >= 1 && tmpS.startsWith("*")) {
                         tmpS = tmpS.substring(1).trim();
                     }
-                    if (!StringUtils.isEmpty(tmpS) && !tmpS.startsWith("@")){
+                    if (!StringUtils.isEmpty(tmpS) && !tmpS.startsWith("@")) {
                         returnStr += tmpS;
                     }
                 }
@@ -1048,12 +1082,12 @@ public class SaveFacesService {
         }
         int clsPos = codeStr.indexOf("public class");
         int pos3 = findStrLast(codeStr, rightPos, "@ApiModel");
-        if (clsPos != -1 && pos3 != -1 && pos3<clsPos){
-            int pos4 = codeStr.indexOf("description",pos3);
+        if (clsPos != -1 && pos3 != -1 && pos3 < clsPos) {
+            int pos4 = codeStr.indexOf("description", pos3);
 
-            if (pos4 != -1){
+            if (pos4 != -1) {
                 String yinhao = getYinhao(codeStr, pos4);
-                if (!StringUtils.isEmpty(yinhao)){
+                if (!StringUtils.isEmpty(yinhao)) {
                     returnStr = yinhao;
                 }
             }

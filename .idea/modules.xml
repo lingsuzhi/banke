@@ -4,7 +4,6 @@
     <modules>
       <module fileurl="file://$PROJECT_DIR$/.idea/banke.iml" filepath="$PROJECT_DIR$/.idea/banke.iml" />
       <module fileurl="file://$PROJECT_DIR$/bankedo/bankedo.iml" filepath="$PROJECT_DIR$/bankedo/bankedo.iml" />
-      <module fileurl="file://$PROJECT_DIR$/bankedo/bankedo.iml" filepath="$PROJECT_DIR$/bankedo/bankedo.iml" />
     </modules>
   </component>
 </project>
