@@ -1,6 +1,8 @@
 <#assign ctx=request.getContextPath()>
 <!DOCTYPE HTML>
 <html>
+
+<title>${(obj.name)!}</title>
 <script src="${ctx}/js/common/jquery.js"></script>
 <link rel="stylesheet" href="${ctx}/plugins/layui/css/layui.css" media="all"/>
 <link rel="stylesheet" href="${ctx}/plugins/font-awesome/css/font-awesome.min.css" media="all"/>

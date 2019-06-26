@@ -10,21 +10,15 @@ package com.lsz.common;
  * @since [产品/模块版本]
  */
 
-import java.io.*;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.Map;
-
 import org.apache.poi.hwpf.HWPFDocument;
 import org.apache.poi.hwpf.model.FieldsDocumentPart;
-import org.apache.poi.hwpf.usermodel.Field;
-import org.apache.poi.hwpf.usermodel.Fields;
-import org.apache.poi.hwpf.usermodel.Paragraph;
-import org.apache.poi.hwpf.usermodel.Range;
-import org.apache.poi.hwpf.usermodel.Table;
-import org.apache.poi.hwpf.usermodel.TableCell;
-import org.apache.poi.hwpf.usermodel.TableIterator;
-import org.apache.poi.hwpf.usermodel.TableRow;
+import org.apache.poi.hwpf.usermodel.*;
+
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.Iterator;
+import java.util.Map;
 
 public class MSWordPoi4 {
 
@@ -48,10 +42,8 @@ public class MSWordPoi4 {
     /**
      * 实现对word读取和修改操作
      *
-     * @param filePath
-     *            word模板路径和名称
-     * @param map
-     *            待填充的数据，从数据库读取
+     * @param filePath word模板路径和名称
+     * @param map      待填充的数据，从数据库读取
      */
     public static ByteArrayOutputStream readwriteWord(String filePath, Map<String, String> map) {
         InputStream in = null;
@@ -63,18 +55,30 @@ public class MSWordPoi4 {
             e1.printStackTrace();
         }
         Fields fields = hdt.getFields();
-        Iterator<Field> it = fields.getFields(FieldsDocumentPart.MAIN)
+        Iterator<Field> iterator = fields.getFields(FieldsDocumentPart.MAIN)
                 .iterator();
-        while (it.hasNext()) {
-            System.out.println(it.next().getType());
+        while (iterator.hasNext()) {
+            System.out.println(iterator.next().getType());
         }
 
         //读取word文本内容
         Range range = hdt.getRange();
-           // 替换文本内容
+
+
+        TableIterator it = new TableIterator(range);
+        // 迭代文档中的表格
+        if (it.hasNext()) {
+            Table tb = (Table) it.next();
+            // 迭代行，默认从0开始
+            Table tcDataTable = tb.insertTableBefore((short) 2, 2);//column and row列数和行数
+            tcDataTable.getRow(0).getCell(0).getParagraph(0).getCharacterRun(0).insertBefore("插入i行j列的内容");
+
+        }
+
+        // 替换文本内容
         for (Map.Entry<String, String> entry : map.entrySet()) {
             String s = entry.getValue();
-            if(s == null){
+            if (s == null) {
                 s = "";
             }
             range.replaceText(entry.getKey(), s);
