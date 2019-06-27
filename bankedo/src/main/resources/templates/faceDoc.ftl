@@ -10,9 +10,17 @@
 <link rel="stylesheet" href="${ctx}/src/css/themes/default.css" media="all" id="skin" kit-skin/>
 <script src="${ctx}/plugins/layui/layui.js"></script>
 <script src="${ctx}/js/common/jquery.qrcode.min.js"></script>
-<style>
+
+<script src="${ctx}/js/common/FileSaver.js"></script>
+<script src="${ctx}/js/common/jquery.wordexport.js"></script>
+<style id="style1">
     div {
         margin: 5px;
+    }
+
+    .layui-table th {
+        background-color:#DDDDDD;
+        text-align: center;
     }
 
     .contextZ {
@@ -39,9 +47,6 @@
     }
 
     }
-</style>
-
-<style>
     /** 右下角跳转按钮 跳转到列表 */
     #list_note_icon {
         position: fixed;
@@ -66,14 +71,14 @@
 
 </style>
 <body>
-<input type="hidden" id="tid" value="${(obj.id)!}" >
+<input type="hidden" id="tid" value="${(obj.id)!}">
 <form class="layui-form" action="">
     <div style="margin-top: 50px ; margin-left: 60px;margin-right: 30px">
         <div style="float:left ; width: 80%">
 
             <h1 style="margin-bottom: 30px ; ">
                 <i class="layui-icon layui-icon-star" style="font-size: 32px; color: #5FBB78;">&#xe62e;</i>&nbsp;
-            ${(obj.name)!}
+                ${(obj.name)!}
                 <h1>
 
                     <hr class="layui-bg-gray">
@@ -121,39 +126,40 @@
         <div>
             <h2>参数</h2>
             <div class="contextZ">
-            <#if parameList??>
-                <table class="layui-table">
-                    <colgroup>
-                        <col width="200">
-                        <col width="150">
-                        <col width="200">
-                        <col>
+                <#if parameList??>
+                    <table class="layui-table" style="width: 88%">
+                        <colgroup>
+                            <col width="200">
+                            <col width="150">
+                            <col width="200">
+                            <col>
 
-                    </colgroup>
-                    <thead>
-                    <tr>
-                        <th>参数名</th>
-                        <th>必选</th>
-                        <th>类型</th>
-                        <th>说明</th>
-                    </tr>
-                    </thead>
-                    <tbody>
-                <#list parameList as listObj>
-                <tr>
-                    <td>${(listObj.parameName)!}</td>
-                    <td><input type="checkbox" name="like[write]" title="必选"
-                               <#if listObj.parameRequired?? && listObj.parameRequired=='true'>checked</#if>></td>
-                    <td>${(listObj.parameType)!}</td>
-                    <td>${(listObj.parameRem)!}</td>
-                </tr>
-                </#list>
-                    </tbody>
-                </table>
-            <#else >
-                <h3><span class="layui-badge-dot"></span>&nbsp;&nbsp;${(obj.parameterRem)!}</h3>
+                        </colgroup>
+                        <thead>
+                        <tr>
+                            <th>参数名</th>
+                            <th>必填</th>
+                            <th>类型</th>
+                            <th>说明</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <#list parameList as listObj>
+                            <tr>
+                                <td>${(listObj.parameName)!}</td>
+                                <#--<td><input type="checkbox" name="like[write]"-->
+                                <#--<#if listObj.parameRequired?? && listObj.parameRequired=='true'>checked</#if>></td>-->
+                                <td><#if listObj.parameRequired?? && listObj.parameRequired=='true'>必填<#else ></#if></td>
+                                <td>${(listObj.parameType)!}</td>
+                                <td>${(listObj.parameRem)!}</td>
+                            </tr>
+                        </#list>
+                        </tbody>
+                    </table>
+                <#else >
+                    <h3><span class="layui-badge-dot"></span>&nbsp;&nbsp;${(obj.parameterRem)!}</h3>
 
-            </#if>
+                </#if>
 
             </div>
         </div>
@@ -197,8 +203,12 @@
         });
     });
     $("#docbtn").click(function () {
-        window.location.href = "/face/docdo" + "?tid=" + $("#tid").val();
+        // window.location.href = "/face/docdo" + "?tid=" + $("#tid").val();
         //    $.get("/face/docdo" + "?name=" + $("#name").val());
+
+
+        $(".layui-form").wordExport('${(obj.name)!}接口');
+
     });
     $("#testDobtn").click(function () {
 
@@ -219,7 +229,7 @@
         var id = $("#tid").val();
         var url = "";
         if (id) {
-            url ="http://" + window.location.host + "/z/" + id;
+            url = "http://" + window.location.host + "/z/" + id;
         } else {
             url = window.location.href;
         }
@@ -261,7 +271,7 @@
     });
 
     function editFace(key) {
-        var id =  $("#tid").val();
+        var id = $("#tid").val();
 
         var href = "/face/editFace.php?key=" + key + "&id=" + id;
         layer.open({
@@ -270,7 +280,7 @@
             //    closeBtn: 0,
             area: ['55%', '66%'],
             content: href,
-            end:function(){
+            end: function () {
                 location.reload();
             }
         });
