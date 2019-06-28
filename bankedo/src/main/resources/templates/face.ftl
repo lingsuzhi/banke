@@ -1,14 +1,15 @@
 <#assign ctx=request.getContextPath()>
 <!DOCTYPE HTML>
 <html>
-<script src="${ctx}/js/common/jquery.js"></script>
 <script src="${ctx}/js/common/common.js"></script>
-<link rel="stylesheet" href="${ctx}/plugins/layui/css/layui.css" media="all"/>
-<style>
-    div {
-        margin: 5px;
-    }
 
+<script src="${ctx}/js/common/jquery.js"></script>
+<link rel="stylesheet" href="${ctx}/plugins/layui/css/layui.css" media="all"/>
+<link rel="stylesheet" href="${ctx}/plugins/font-awesome/css/font-awesome.min.css" media="all"/>
+<link rel="stylesheet" href="${ctx}/src/css/app.css" media="all"/>
+<link rel="stylesheet" href="${ctx}/src/css/themes/default.css" media="all" id="skin" kit-skin/>
+<script src="${ctx}/plugins/layui/layui.js"></script>
+<style>
     .txtkey {
         margin-left: 3px;
         width: 150px;
@@ -29,66 +30,90 @@
     }
 </style>
 <body>
-<div style="margin-top: 12px">
-    <div>
-        名称：<input id="name" style="width:550px;" value="${(obj.name)!}"/>
-        <select id="postSelect" style="height: 26px">
-            <option value="GET">GET</option>
-            <option value="POST">POST</option>
-            <option value="Put">Put</option>
-            <option value="Delete">Delete</option>
-        </select>
-        &nbsp<input hidden type="button" id="savebtn" value="保 存"/>
-        &nbsp<input hidden type="button" id="delbtn" value="删 除"/>
-        &nbsp<input hidden type="button" id="docbtn" value="接口文档"/>
-    </div>
-    <div>
-        地址：<input id="url" style="width:550px;" value="http://pxy-disp-sit2.banketech.com${(obj.url)!}"/>
-        &nbsp<input type="button" id="okbtn" class="layui-btn   layui-btn-sm"  value="测 试"/>
+<form class="layui-form" action="">
+    <div style="margin-top: 12px;margin-left: 100px">
+        <div>
+            <h1 style="margin-top: 30px ; margin-left: 222px">
+                <i class="layui-icon layui-icon-star" style="font-size: 32px; color: #2299dd;">&#xe6b2;</i>&nbsp;
+                ${(obj.name)!}
+                <h1>
+                    &nbsp<input hidden type="button" id="savebtn" value="保 存"/>
+                    &nbsp<input hidden type="button" id="delbtn" value="删 除"/>
+                    &nbsp<input hidden type="button" id="docbtn" value="接口文档"/>
+        </div>
+        <div class="layui-container">
+            <div class="layui-row layui-col-space5">
+                <div class="layui-col-md2">
+                    <select id="postSelect">
+                    <option value="GET">GET</option>
+                    <option value="POST">POST</option>
+                    <option value="Put">Put</option>
+                    <option value="Delete">Delete</option>
+                    </select>
 
-    </div>
-    <div style="float: left">
-
-        <div style="width: 650px; float: left">
-            <div style="float: left"> <input id="tokenId" type="button" value="token"></div>
-
-            <fieldset>
-
-                <legend>请求头</legend>
-            <#--<textarea id="headtxt" style="width:98%;height:100px">${(obj.head)!}</textarea>-->
-
-                <div id="headField">
-
-                    <div data-id="1" class="headCls">
-                        key<input class="txtkey" onchange="txtkeyChange(this)">
-                        val<input class="txtvalue">
-                        <button onclick="delBtn(this)">X</button>
-                    </div>
                 </div>
+                <div class="layui-col-md7">
+                    <input type="text" id="url" value="http://devgw.jms.com${(obj.url)!}"  lay-verify="required" placeholder="请输入标题" autocomplete="off" class="layui-input">
 
-            </fieldset>
-            <div>参数</div>
-            <textarea id="sendtxt" style="width:100%;height:600px"><#list parameList as listObj>${(listObj.parameName)!}=
-            </#list>
+                </div>
+                <div class="layui-col-md3">
+                    <input type="button" id="okbtn" class="layui-btn" value="Send"/>
+
+                </div>
+            </div>
+        </div>
+        <div class=""
+        <div style="float: left">
+
+            <div style="width: 650px; float: left">
+                <div style="float: left"><input id="tokenId" type="button" value="token"></div>
+
+                <fieldset>
+
+                    <legend>请求头</legend>
+                    <#--<textarea id="headtxt" style="width:98%;height:100px">${(obj.head)!}</textarea>-->
+
+                    <div id="headField">
+
+                        <div data-id="1" class="headCls">
+                            key<input class="txtkey" onchange="txtkeyChange(this)">
+                            val<input class="txtvalue">
+                            <button onclick="delBtn(this)">X</button>
+                        </div>
+                    </div>
+
+                </fieldset>
+                <div>参数</div>
+                <textarea id="sendtxt"
+                          style="width:100%;height:600px"><#list parameList as listObj>${(listObj.parameName)!}=
+                    </#list>
              </textarea>
 
 
-        </div>
-        <div style="float: left">
-            <div>返回值</div>
+            </div>
+            <div style="float: left">
+                <div>返回值</div>
 
                 <textarea id="returntxt" style="width:600px;height:680px">${(obj.returnStr)!}</textarea>
 
+            </div>
         </div>
     </div>
-</div>
+</form>
 </body>
 </html>
 
 
-
-
 <script>
+    layui.use('form', function () {
+        var form = layui.form;
+
+        //监听提交
+        form.on('submit(formDemo)', function (data) {
+            layer.msg(JSON.stringify(data.field));
+            return false;
+        });
+    });
 
     $(function () {
         $("#postSelect").val("${(obj.method)!}");
@@ -121,9 +146,9 @@
 
                 var divNew = div.parent().children("[data-id=" + 2 + "]");
 
-                if(divNew ){
+                if (divNew) {
                     var txt = divNew.children(".txtkey").val();
-                    if(txt==""){
+                    if (txt == "") {
                         divNew.remove();
                     }
                 }
@@ -239,11 +264,11 @@
         var postname = $("#postSelect").val();
         var url = $("#url").val();
         var name = $("#name").val();
-        if (name) {
-        } else {
-            alert("名称不能为空~");
-            return false;
-        }
+        // if (name) {
+        // } else {
+        //     alert("名称不能为空~");
+        //     return false;
+        // }
         if (url) {
         } else {
             alert("地址不能为空~");
@@ -321,7 +346,7 @@
                 var tmpJson = JSON.stringify(data, null, 4);
                 $("#returntxt").val(tmpJson);
                 console.log(data);
-            },error: function (data) {
+            }, error: function (data) {
                 $("#returntxt").val(data.responseJson);
                 console.log(data);
             },
@@ -334,7 +359,8 @@
 
         $.ajax(post);
     }
-    $("#tokenId").click(function(){
+
+    $("#tokenId").click(function () {
         $(".txtkey").val("Authorization");
         $(".txtvalue").val("UEBnbDFTZFhlcWhvNGtPRlRaRUhYQ0Z1");
     })
