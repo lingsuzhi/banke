@@ -9,6 +9,7 @@ import org.springframework.ui.Model;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -18,6 +19,8 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardOpenOption;
+import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 import static com.lsz.service.SaveFacesService.ApiDir;
@@ -48,6 +51,11 @@ public class IndexController {
     @RequestMapping("/test1.php")
     public String test1(Model model) {
         return "test1";
+    }
+
+    @RequestMapping("/upload.php")
+    public String upload(Model model) {
+        return "upload";
     }
 
     @RequestMapping("/config")
@@ -99,7 +107,7 @@ public class IndexController {
 
     @RequestMapping(value = "/upload/postFile")
     @ResponseBody
-    public ResponseInfo<?> uploadNunWidthBizId(@RequestParam("file") MultipartFile file,
+    public ResponseInfo<?> uploadNunWidthBizId(@RequestParam("file") @RequestPart MultipartFile file,
                                                @RequestParam(value = "fileName", required = false) String fileName) throws IOException {
         if (!file.isEmpty()) {
             Path fullPath = Paths.get(SaveFacesService.FileDirP ,"head.json");
@@ -112,6 +120,27 @@ public class IndexController {
         } else {
             return ResponseInfo.error(null);
         }
+    }
+
+    public static void main(String[] args) {
+        List<Integer> integerList = new ArrayList<>();//存储remove的位置
+
+        integerList.add(1);
+        integerList.add(2);
+        integerList.add(3);
+        integerList.add(4);//此处相当于要移除最后一个数据
+        Iterator<Integer> iterator = integerList.iterator();
+        while (iterator.hasNext()){
+            Integer next = iterator.next();
+            if (next  == 2 || next== 4){
+                iterator.remove();
+            }
+        }
+        for (Integer i :integerList){
+            System.out.println(i);
+        }
+
+
     }
 
 }

@@ -45,15 +45,16 @@
             <div class="layui-row layui-col-space5">
                 <div class="layui-col-md2">
                     <select id="postSelect">
-                    <option value="GET">GET</option>
-                    <option value="POST">POST</option>
-                    <option value="Put">Put</option>
-                    <option value="Delete">Delete</option>
+                        <option value="GET">GET</option>
+                        <option value="POST">POST</option>
+                        <option value="Put">Put</option>
+                        <option value="Delete">Delete</option>
                     </select>
 
                 </div>
                 <div class="layui-col-md7">
-                    <input type="text" id="url" value="http://devgw.jms.com${(obj.url)!}"  lay-verify="required" placeholder="请输入标题" autocomplete="off" class="layui-input">
+                    <input type="text" id="url" value="http://devgw.jms.com${(obj.url)!}" lay-verify="required"
+                           placeholder="请输入标题" autocomplete="off" class="layui-input">
 
                 </div>
                 <div class="layui-col-md3">
@@ -64,7 +65,35 @@
         </div>
         <div class=""
         <div style="float: left">
-
+            <#--<table class="layui-table">-->
+                <#--<colgroup>-->
+                    <#--<col width="200">-->
+                    <#--<col width="300">-->
+                    <#--<col>-->
+                    <#--<col width="50">-->
+                <#--</colgroup>-->
+                <#--<thead>-->
+                <#--<tr>-->
+                    <#--<th>请求头</th>-->
+                    <#--<th>值</th>-->
+                    <#--<th>描述</th>-->
+                    <#--<th>...</th>-->
+                <#--</tr>-->
+                <#--</thead>-->
+                <#--<tbody>-->
+                <#--<tr>-->
+                    <#--<td><input class="layui-input" onchange="txtkeyChange(this)"></td>-->
+                    <#--<td><input class="layui-input"/></td>-->
+                    <#--<td><input class="layui-input layui-input-sm"/></td>-->
+                    <#--<td>-->
+                        <#--&lt;#&ndash;<button onclick="delBtn(this)" class="layui-btn layui-btn-sm layui-btn-danger">X</button>&ndash;&gt;-->
+                        <#--<button type="button" class="layui-btn layui-btn-primary layui-btn-sm">-->
+                            <#--<i class="layui-icon">&#xe640;</i>-->
+                        <#--</button>-->
+                    <#--</td>-->
+                <#--</tr>-->
+                <#--</tbody>-->
+            <#--</table>-->
             <div style="width: 650px; float: left">
                 <div style="float: left"><input id="tokenId" type="button" value="token"></div>
 
