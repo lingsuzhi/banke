@@ -109,7 +109,9 @@ public class SaveFacesService {
      */
     private static String getYinhao(String str, int pos) {
         int pos1 = str.indexOf("\"", pos);
-        if (pos1 == -1) return "";
+        if (pos1 == -1) {
+            return "";
+        }
         int pos2 = str.indexOf("\"", pos1 + 1);
         return str.substring(pos1 + 1, pos2);
     }
@@ -123,7 +125,9 @@ public class SaveFacesService {
      */
     private static String getEnterRow(String str, int pos) {
         int pos1 = findStrLast(str, pos, "\n");
-        if (pos1 == -1) return "";
+        if (pos1 == -1) {
+            return "";
+        }
         int pos2 = str.indexOf("\n", pos);
         return str.substring(pos1 + 2, pos2);
     }
@@ -256,7 +260,6 @@ public class SaveFacesService {
 //            }
         for (OpenDoDTO openDoDTO : FileMap) {
             if (dto.equals(openDoDTO.getName())) {
-                System.out.println(1);
                 DtoBO dtoBO = openDtoFile(openDoDTO.getPath());
                 if (dtoBO != null && !CollectionUtils.isEmpty(dtoBO.getAttrList())) {
                     for (DtoAttrBO dtoAttrBO : dtoBO.getAttrList()) {
@@ -521,7 +524,9 @@ public class SaveFacesService {
     public SavePostBO openFileEx(String fileStr, String dirName, String apiDir) {
         final String finalStr = "fileStr=";
         int pos = fileStr.indexOf(finalStr);
-        if (pos == -1) return null;
+        if (pos == -1) {
+            return null;
+        }
         int pos2 = fileStr.indexOf("&", pos);
         if (pos2 < pos) {
             pos2 = fileStr.length();
@@ -793,11 +798,13 @@ public class SaveFacesService {
     }
 
     public void batchGenerateDo(String path) {
-        //过来的是一个源代码目录，里面有很多微服务
+        //过来的是一个源代码目录，里面有很多微服务的代码
         FileMap = new ArrayList<>();
         File dir = new File(path);
         File[] files = dir.listFiles();
-        if (files == null) return;
+        if (files == null) {
+            return;
+        }
         //对文件进行循环遍历
         for (File file : files) {
             doJavaFileDo(file);
@@ -814,6 +821,11 @@ public class SaveFacesService {
         List<File> fileList = findPath(file.getAbsolutePath(), "dto");
         List<File> fileVoList = findPath(file.getAbsolutePath(), "vo");
         fileList.addAll(fileVoList);
+
+        List<File> filePojoList = findPath(file.getAbsolutePath(), "pojo");
+        fileList.addAll(filePojoList);
+
+
         if (CollectionUtils.isEmpty(fileList)) {
             log.info("路径:{} 找不到dto目录", file.getAbsolutePath());
             return;
@@ -861,7 +873,9 @@ public class SaveFacesService {
     public void batchGenerate(File dir, String projectName) {
         List<File> list = new ArrayList<>();
         folderMethod2(dir, list);
-        if (CollectionUtils.isEmpty(list)) return;
+        if (CollectionUtils.isEmpty(list)){
+            return;
+        }
         //对文件进行循环遍历
         for (File file : list) {
             doJavaFile(file, projectName);
@@ -871,8 +885,12 @@ public class SaveFacesService {
     public void batchGenerateDto(File dir, String projectName) {
         List<File> list = new ArrayList<>();
         folderMethod2(dir, list);
-        if (CollectionUtils.isEmpty(list)) return;
-        if (list == null) return;
+        if (CollectionUtils.isEmpty(list)) {
+            return;
+        }
+        if (list == null) {
+            return;
+        }
         //对文件进行循环遍历
         for (File file : list) {
             doJavaFileDto(file, projectName);
@@ -893,7 +911,9 @@ public class SaveFacesService {
         //创建java api文件夹
         dir.mkdir();
         String fileStr = FileUtils.FileUTF8ToStr(file);
-        if (StringUtils.isEmpty(fileStr)) return;
+        if (StringUtils.isEmpty(fileStr)) {
+            return;
+        }
         final String keyVal = "Mapping(";
         boolean RequestMethod_GET = false;
         boolean RequestMethod_POST = false;
@@ -901,7 +921,9 @@ public class SaveFacesService {
         int mappingPos1 = fileStr.indexOf(keyVal);
         int pos2 = fileStr.indexOf("public class");
 
-        if (mappingPos1 == -1 || pos2 == -1) return;
+        if (mappingPos1 == -1 || pos2 == -1){
+            return;
+        }
         //原理：第一个 mapping 后面第一个引号的内容 就是控制器路径
 
         String classPathValue = getYinhao(fileStr.substring(0, pos2), mappingPos1);
@@ -984,14 +1006,20 @@ public class SaveFacesService {
         //创建java dto文件夹
         dir.mkdir();
         String fileStr = FileUtils.FileUTF8ToStr(file);
-        if (StringUtils.isEmpty(fileStr)) return;
+        if (StringUtils.isEmpty(fileStr)) {
+            return;
+        }
 
 
         final String classStr = " class ";
         int classPos = fileStr.indexOf(classStr);
-        if (classPos == -1) return;
+        if (classPos == -1){
+            return;
+        }
         int classdkhPos = fileStr.indexOf("{", classPos);
-        if (classdkhPos == -1) return;
+        if (classdkhPos == -1){
+            return;
+        }
         //private
         int mapPos = classdkhPos;
         String keyVal = "private ";
@@ -1025,6 +1053,13 @@ public class SaveFacesService {
                         } else {
                             dtoAttrBO.setParameRequired("false");
                         }
+
+                        if (typeStr.contains("<")){
+                            typeStr = typeStr.split("<")[0];
+                        }
+                        if (nameStr.contains(">")){
+                            nameStr = nameStr.split(">")[1];
+                        }
                         dtoAttrBO.setTypeStr(typeStr);
                         dtoAttrBO.setNameStr(nameStr);
                         dtoAttrBO.setRemStr(remStr);
@@ -1053,7 +1088,9 @@ public class SaveFacesService {
         int pos2 = findStrLast(codeStr, rightPos, "*/");
         String returnStr = "";
         if (pos1 != -1 && pos2 != -1 && pos1 > leftPos) {
-            if (pos1 > pos2) return null;
+            if (pos1 > pos2){
+                return null;
+            }
             String zhujieStr = codeStr.substring(pos1, pos2);
             String[] sArr = zhujieStr.split("\n");
 
@@ -1119,7 +1156,9 @@ public class SaveFacesService {
         int pos2 = findStrLast(fileStr, pos, "*/");
         String paramS = "";
         if (pos1 != -1 && pos2 != -1 && pos1 > leftPos) {
-            if (pos1 > pos2) return null;
+            if (pos1 > pos2) {
+                return null;
+            }
             String zhujieStr = fileStr.substring(pos1, pos2);
             String[] sArr = zhujieStr.split("\n");
             if (sArr != null) {
@@ -1168,12 +1207,14 @@ public class SaveFacesService {
                 savePostBO.setName(nameS);
             }
         }
-        int posApiOperation = fileStr.indexOf("@ApiOperation", pos);
-        int posPublic = fileStr.indexOf("public ", pos);
-        if (posPublic != -1 && posApiOperation != -1 && posPublic > posApiOperation) {
-            String yinhao = getYinhao(fileStr, posApiOperation);
-            savePostBO.setName(yinhao);
-            savePostBO.setDescribe(yinhao);
+
+        int posApiOperation = findStrLast(fileStr, pos, "@ApiOperation");
+        if (posApiOperation != -1) {
+            if (leftPos < posApiOperation) {
+                String yinhao = getYinhao(fileStr, posApiOperation);
+                savePostBO.setName(yinhao);
+                savePostBO.setDescribe(yinhao);
+            }
         }
         String paramStr = paramHandle(fileStr, pos, paramS);
         String returnTypeStr = returnHandle(fileStr, pos);
@@ -1194,9 +1235,13 @@ public class SaveFacesService {
 //        int nPos = fileStr.indexOf("\n", pos);
         int nPos = fileStr.indexOf("public ", pos);
         //这里获取返回类型     ResponseInfo<List<StaffInfoDTO>>
-        if (nPos == -1) return "";
+        if (nPos == -1){
+            return "";
+        }
         int leftKuohao = fileStr.indexOf("(", nPos);
-        if (leftKuohao == -1) return "";
+        if (leftKuohao == -1) {
+            return "";
+        }
         String returnType = fileStr.substring(nPos, leftKuohao - 1).trim();
         int konggePos = returnType.lastIndexOf(" ");
         if (konggePos == -1) {
@@ -1237,12 +1282,18 @@ public class SaveFacesService {
 
         int nPos = fileStr.indexOf("public ", pos);
         StringBuffer sb = new StringBuffer();
-        if (nPos == -1) return paramS;
+        if (nPos == -1){
+            return paramS;
+        }
         int leftKuohao = fileStr.indexOf("(", nPos);
-        if (leftKuohao == -1) return paramS;
+        if (leftKuohao == -1){
+            return paramS;
+        }
         int leftK = 1;
         for (int fori = leftKuohao + 1; ; fori++) {
-            if (fori >= fileStr.length()) break;
+            if (fori >= fileStr.length()) {
+                break;
+            }
             String tmpS = fileStr.substring(fori, fori + 1);
             if ("(".equals(tmpS) || "<".equals(tmpS)) {
                 leftK++;
@@ -1282,6 +1333,9 @@ public class SaveFacesService {
             posKG = s.lastIndexOf(")");
             if (posKG == -1) {
                 posKG = s.lastIndexOf(" ");
+                if (s.contains(" Map")){
+                    posKG = s.indexOf(" Map");
+                }
             }
 
             String paramType = s.substring(posKG + 1).trim();
