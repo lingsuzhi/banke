@@ -229,8 +229,8 @@ public class SaveFacesService {
                             .replace("List&lt;", "")
                             .replace("&lt;", "")
                             .replace("&gt;", "");
-                    for (OpenDoDTO openDoDTO :dtoList){
-                        if (tmpStr.equals(openDoDTO.getName())){
+                    for (OpenDoDTO openDoDTO : dtoList) {
+                        if (tmpStr.equals(openDoDTO.getName())) {
                             savePostBO.setReturnTypeStr(addHtmlA(savePostBO.getReturnTypeStr(), openDoDTO.getProjectName(), tmpStr));
                             break;
                         }
@@ -263,7 +263,27 @@ public class SaveFacesService {
                 DtoBO dtoBO = openDtoFile(openDoDTO.getPath());
                 if (dtoBO != null && !CollectionUtils.isEmpty(dtoBO.getAttrList())) {
                     for (DtoAttrBO dtoAttrBO : dtoBO.getAttrList()) {
-                        list.add(new ParameBO(dtoAttrBO.getNameStr(), dtoAttrBO.getParameRequired(), dtoAttrBO.getTypeStr(), dtoAttrBO.getRemStr()));
+                        ParameBO parameBO = new ParameBO(dtoAttrBO.getNameStr(), dtoAttrBO.getParameRequired(), dtoAttrBO.getTypeStr(), dtoAttrBO.getRemStr());
+                        if ("id".equalsIgnoreCase(parameBO.getParameName()) ) {
+                            if (savePostBO.getUrl().contains("/add")) {
+                                continue;
+                            }
+                            parameBO.setParameRequired("true");
+                            parameBO.setParameRem("ID");
+                        }
+                        if ("isEnable".equalsIgnoreCase(parameBO.getParameName()) && savePostBO.getUrl().contains("/add")) {
+                            continue;
+                        }
+                        if ("createBy".equalsIgnoreCase(parameBO.getParameName())
+                                || "createTime".equalsIgnoreCase(parameBO.getParameName())
+                                || "updateBy".equalsIgnoreCase(parameBO.getParameName())
+                                || "updateTime".equalsIgnoreCase(parameBO.getParameName())
+                        ) {
+                            continue;
+                        }
+
+
+                        list.add(parameBO);
                     }
                 }
                 return true;
@@ -297,7 +317,6 @@ public class SaveFacesService {
                         if (!StringUtils.isEmpty(tmpType)) {
                             parameBO.setParameType(tmpType);
                         }
-
                         list.add(parameBO);
                     }
                 }
@@ -873,7 +892,7 @@ public class SaveFacesService {
     public void batchGenerate(File dir, String projectName) {
         List<File> list = new ArrayList<>();
         folderMethod2(dir, list);
-        if (CollectionUtils.isEmpty(list)){
+        if (CollectionUtils.isEmpty(list)) {
             return;
         }
         //对文件进行循环遍历
@@ -921,7 +940,7 @@ public class SaveFacesService {
         int mappingPos1 = fileStr.indexOf(keyVal);
         int pos2 = fileStr.indexOf("public class");
 
-        if (mappingPos1 == -1 || pos2 == -1){
+        if (mappingPos1 == -1 || pos2 == -1) {
             return;
         }
         //原理：第一个 mapping 后面第一个引号的内容 就是控制器路径
@@ -1013,11 +1032,11 @@ public class SaveFacesService {
 
         final String classStr = " class ";
         int classPos = fileStr.indexOf(classStr);
-        if (classPos == -1){
+        if (classPos == -1) {
             return;
         }
         int classdkhPos = fileStr.indexOf("{", classPos);
-        if (classdkhPos == -1){
+        if (classdkhPos == -1) {
             return;
         }
         //private
@@ -1054,10 +1073,10 @@ public class SaveFacesService {
                             dtoAttrBO.setParameRequired("false");
                         }
 
-                        if (typeStr.contains("<")){
+                        if (typeStr.contains("<")) {
                             typeStr = typeStr.split("<")[0];
                         }
-                        if (nameStr.contains(">")){
+                        if (nameStr.contains(">")) {
                             nameStr = nameStr.split(">")[1];
                         }
                         dtoAttrBO.setTypeStr(typeStr);
@@ -1088,7 +1107,7 @@ public class SaveFacesService {
         int pos2 = findStrLast(codeStr, rightPos, "*/");
         String returnStr = "";
         if (pos1 != -1 && pos2 != -1 && pos1 > leftPos) {
-            if (pos1 > pos2){
+            if (pos1 > pos2) {
                 return null;
             }
             String zhujieStr = codeStr.substring(pos1, pos2);
@@ -1235,7 +1254,7 @@ public class SaveFacesService {
 //        int nPos = fileStr.indexOf("\n", pos);
         int nPos = fileStr.indexOf("public ", pos);
         //这里获取返回类型     ResponseInfo<List<StaffInfoDTO>>
-        if (nPos == -1){
+        if (nPos == -1) {
             return "";
         }
         int leftKuohao = fileStr.indexOf("(", nPos);
@@ -1282,11 +1301,11 @@ public class SaveFacesService {
 
         int nPos = fileStr.indexOf("public ", pos);
         StringBuffer sb = new StringBuffer();
-        if (nPos == -1){
+        if (nPos == -1) {
             return paramS;
         }
         int leftKuohao = fileStr.indexOf("(", nPos);
-        if (leftKuohao == -1){
+        if (leftKuohao == -1) {
             return paramS;
         }
         int leftK = 1;
@@ -1333,7 +1352,7 @@ public class SaveFacesService {
             posKG = s.lastIndexOf(")");
             if (posKG == -1) {
                 posKG = s.lastIndexOf(" ");
-                if (s.contains(" Map")){
+                if (s.contains(" Map")) {
                     posKG = s.indexOf(" Map");
                 }
             }
