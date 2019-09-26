@@ -1137,9 +1137,6 @@ public class SaveFacesService {
             }
         }
         int clsPos = codeStr.indexOf("public class");
-        if (codeStr.indexOf("public class CertificateUserDTO") > 0){
-            log.info("1");
-        }
         int pos3 = findStrLast(codeStr, rightPos, "@ApiModel");
         if (clsPos != -1 && pos3 != -1 && pos3 < rightPos) {
             int pos4 = codeStr.indexOf("description", pos3);
