@@ -52,7 +52,7 @@ public class SaveFacesService {
         baseTypeMap = new HashMap<>();
         baseTypeMap.put("String", "字符串");
 //        baseTypeMap.put("int", "整型");
-//        baseTypeMap.put("Integer", "整型");
+        baseTypeMap.put("Integer", "整数");
 //        baseTypeMap.put("long", "长整型");
 //        baseTypeMap.put("Long", "长整型");
 //        baseTypeMap.put("Boolean", "布尔型");
@@ -225,10 +225,14 @@ public class SaveFacesService {
                             .replace("Result", "")
                             .replace("ResponseInfo", "")
                             .replace("IPage&lt;", "")
+                            .replace("BasePage&lt;", "")
                             .replace("Page&lt;", "")
                             .replace("List&lt;", "")
                             .replace("&lt;", "")
                             .replace("&gt;", "");
+                    List<ParameBO> resultList =new ArrayList();
+                    dtoManger(savePostBO,tmpStr,resultList);
+                    model.addAttribute("resultList", resultList);
                     for (OpenDoDTO openDoDTO : dtoList) {
                         if (tmpStr.equals(openDoDTO.getName())) {
                             savePostBO.setReturnTypeStr(addHtmlA(savePostBO.getReturnTypeStr(), openDoDTO.getProjectName(), tmpStr));
@@ -263,6 +267,12 @@ public class SaveFacesService {
                 DtoBO dtoBO = openDtoFile(openDoDTO.getPath());
                 if (dtoBO != null && !CollectionUtils.isEmpty(dtoBO.getAttrList())) {
                     for (DtoAttrBO dtoAttrBO : dtoBO.getAttrList()) {
+                        String tmpType = baseTypeMap.get(dtoAttrBO.getTypeStr());
+                        //基础类型替换成中文
+                        if (!StringUtils.isEmpty(tmpType)) {
+                            dtoAttrBO.setTypeStr(tmpType);
+                        }
+
                         ParameBO parameBO = new ParameBO(dtoAttrBO.getNameStr(), dtoAttrBO.getParameRequired(), dtoAttrBO.getTypeStr(), dtoAttrBO.getRemStr());
                         if ("id".equalsIgnoreCase(parameBO.getParameName()) ) {
                             if (savePostBO.getUrl().contains("/add")) {
@@ -271,6 +281,7 @@ public class SaveFacesService {
                             parameBO.setParameRequired("true");
                             parameBO.setParameRem("ID");
                         }
+
                         if ("isEnable".equalsIgnoreCase(parameBO.getParameName()) && savePostBO.getUrl().contains("/add")) {
                             continue;
                         }
@@ -1452,6 +1463,8 @@ public class SaveFacesService {
     }
 
     private Boolean openDoRem(String id, Model model) {
+        model.addAttribute("rem", new HashMap<>());
+
         OpenDoDTO openDoDTO = getMappingStr(id);
         if (openDoDTO == null || StringUtils.isEmpty(openDoDTO.getPath())) {
             return null;

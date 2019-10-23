@@ -179,6 +179,35 @@
                 <#if rem.fhz?? && (rem.fhz?length gt 0)>
                     <pre class="layui-code">${(rem.fhz)!}</pre>
                 </#if>
+
+
+                <#if resultList??>
+                    <table class="layui-table" style="width: 88%">
+                        <colgroup>
+                            <col width="200">
+                            <col width="150">
+                            <col width="200">
+                            <col>
+
+                        </colgroup>
+                        <thead>
+                        <tr>
+                            <th>参数名</th>
+                            <th>类型</th>
+                            <th>说明</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <#list resultList as listObj>
+                            <tr>
+                                <td>${(listObj.parameName)!}</td>
+                                <td>${(listObj.parameType)!}</td>
+                                <td>${(listObj.parameRem)!}</td>
+                            </tr>
+                        </#list>
+                        </tbody>
+                    </table>
+                </#if>
             </div>
         </div>
     </div>
