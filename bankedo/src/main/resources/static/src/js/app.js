@@ -46,9 +46,14 @@ layui.define(['element', 'nprogress', 'form', 'table', 'loader', 'tab', 'navbar'
         hello: function (str) {
             layer.alert('Hello ' + (str || 'test'));
         },
-        searchBtn: function () {
-            var txtUrl = $("#txtUrl").val();
-            var txtName = $("#txtName").val();
+        searchBtn: function (type) {
+            if (type == 1) {
+                var txtUrl = $("#searchId").val();
+                var txtName = ''
+            } else {
+                var txtUrl = $("#txtUrl").val();
+                var txtName = $("#txtName").val();
+            }
 
             $.get("/index/navbarFind", {
                     txtUrl: txtUrl,
@@ -218,7 +223,7 @@ layui.define(['element', 'nprogress', 'form', 'table', 'loader', 'tab', 'navbar'
                 // }).render(function(data) {
                 //     tab.tabAdd(data);
                 // });
-                app.funSetMenu(dirName,$("#leftMenu").val());
+                app.funSetMenu(dirName, $("#leftMenu").val());
                 //navbar加载方式三，设置data本地数据
                 // navbar.set({
                 //     data: [{

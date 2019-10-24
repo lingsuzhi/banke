@@ -13,48 +13,54 @@
 </head>
 
 <body class="kit-theme">
-<a href="javascript:;"    kit-target="" id="aId1" data-options=""></a>
-<a href="javascript:;"    kit-target="" id="aId2" data-options=""></a>
-<a href="javascript:;"    kit-target="" id="aId3" data-options=""></a>
+<a href="javascript:;" kit-target="" id="aId1" data-options=""></a>
+<a href="javascript:;" kit-target="" id="aId2" data-options=""></a>
+<a href="javascript:;" kit-target="" id="aId3" data-options=""></a>
 
-<div  >
+<div>
     <input type="hidden" id="proNameHide" value="${(proName)!}">
-    <input type="hidden" id="leftMenu" value="${(leftMenu)!}" >
+    <input type="hidden" id="leftMenu" value="${(leftMenu)!}">
 
     <div class="layui-layout layui-layout-admin">
-    <div class="layui-header">
-        <div class="layui-logo"> <img src="${ctx}/images/xrk.png" onclick="layui.app.dtoOrApi()" class="layui-nav-img" style="width: 50px;height: 50px">Api接口平台
-        </div>
-        <!-- 头部区域（可配合layui已有的水平导航） -->
-        <ul class="layui-nav layui-layout-left">
-            ${(headMenu)!}
-        </ul>
-        <ul class="layui-nav layui-layout-right" style="margin-right: 30px">
-            <li class="layui-nav-item">
-                <a href="javascript:;" onclick="layui.app.search()">
-                    <img src="${ctx}/images/search.png" alt="搜索" width="26px" >
-                    <span id="proName"   style="color: #009688" ></span>
-                </a>
-            </li>
-        </ul>
-    </div>
-
-    <div class="layui-side layui-bg-black kit-side" >
-        <div class="layui-side-scroll">
-            <div class="kit-side-fold"><i class="fa fa-navicon" aria-hidden="true"></i></div>
-            <!-- 左侧导航区域（可配合layui已有的垂直导航） -->
-            <ul class="layui-nav layui-nav-tree" lay-filter="kitNavbar" kit-navbar>
+        <div class="layui-header">
+            <div class="layui-logo"><img src="${ctx}/images/xrk.png" onclick="layui.app.dtoOrApi()"
+                                         class="layui-nav-img" style="width: 50px;height: 50px">Api接口平台
+            </div>
+            <!-- 头部区域（可配合layui已有的水平导航） -->
+            <ul class="layui-nav layui-layout-left">
+                ${(headMenu)!}
+            </ul>
+            <ul class="layui-nav layui-layout-right" style="margin-right: 30px">
+                <li class="layui-nav-item">
+                    <input id="searchId" type="input" style="    height: 32px;    border: 0;    width: 320px;    margin-top: 1px;" onchange="layui.app.searchBtn(1)"/>
+                </li>
+                <li class="layui-nav-item">
+                    <a href="javascript:;" onclick="layui.app.search()">
+                        <img src="${ctx}/images/search.png" alt="搜索" width="26px">
+                        <span id="proName" style="color: #009688"></span>
+                    </a>
 
 
+                </li>
             </ul>
         </div>
-    </div>
-    <div class="layui-body" id="container">
-        <!-- 内容主体区域 -->
-        <div style="padding: 15px;"><i class="layui-icon layui-anim layui-anim-rotate layui-anim-loop">&#xe63e;</i>
-            请稍等...
+
+        <div class="layui-side layui-bg-black kit-side">
+            <div class="layui-side-scroll">
+                <div class="kit-side-fold"><i class="fa fa-navicon" aria-hidden="true"></i></div>
+                <!-- 左侧导航区域（可配合layui已有的垂直导航） -->
+                <ul class="layui-nav layui-nav-tree" lay-filter="kitNavbar" kit-navbar>
+
+
+                </ul>
+            </div>
         </div>
-    </div>
+        <div class="layui-body" id="container">
+            <!-- 内容主体区域 -->
+            <div style="padding: 15px;"><i class="layui-icon layui-anim layui-anim-rotate layui-anim-loop">&#xe63e;</i>
+                请稍等...
+            </div>
+        </div>
 
     </div>
 </div>
@@ -71,8 +77,8 @@
         version: '1.0.1'
     }).use(['app', 'message'], function () {
         var app = layui.app,
-                $ = layui.jquery,
-                layer = layui.layer;
+            $ = layui.jquery,
+            layer = layui.layer;
 
 
         //将message设置为全局以便子页面调用
@@ -88,23 +94,23 @@
             switchSkin(skin);
         });
         var setSkin = function (value) {
-                    layui.data('kit_skin', {
-                        key: 'skin',
-                        value: value
-                    });
-                },
-                getSkinName = function () {
-                    return layui.data('kit_skin').skin;
-                },
-                switchSkin = function (value) {
-                    var _target = $('link[kit-skin]')[0];
-                    _target.href = _target.href.substring(0, _target.href.lastIndexOf('/') + 1) + value + _target.href.substring(_target.href.lastIndexOf('.'));
-                    setSkin(value);
-                },
-                initSkin = function () {
-                    var skin = getSkinName();
-                    switchSkin(skin === undefined ? 'default' : skin);
-                }();
+                layui.data('kit_skin', {
+                    key: 'skin',
+                    value: value
+                });
+            },
+            getSkinName = function () {
+                return layui.data('kit_skin').skin;
+            },
+            switchSkin = function (value) {
+                var _target = $('link[kit-skin]')[0];
+                _target.href = _target.href.substring(0, _target.href.lastIndexOf('/') + 1) + value + _target.href.substring(_target.href.lastIndexOf('.'));
+                setSkin(value);
+            },
+            initSkin = function () {
+                var skin = getSkinName();
+                switchSkin(skin === undefined ? 'default' : skin);
+            }();
     });
 </script>
 
@@ -115,10 +121,10 @@
 
     <div style="margin-left: 30px;margin-top: 30px">
         <h2 align="center">Search</h2>
-    <div style="margin-left: 3px;margin-top: 20px">名称：<input id="txtName" style="height: 26px"></div>
-    <div style="margin-left: 3px;margin-top: 20px">路径：<input id="txtUrl" style="height: 26px"></div>
+        <div style="margin-left: 3px;margin-top: 20px">名称：<input id="txtName" style="height: 26px"></div>
+        <div style="margin-left: 3px;margin-top: 20px">路径：<input id="txtUrl" style="height: 26px"></div>
         <div style="margin-left: 88px;margin-top: 30px">
-    <input type="button" value="搜 索" class="layui-btn layui-btn-primary"  onclick="layui.app.searchBtn()">
+            <input type="button" value="搜 索" class="layui-btn layui-btn-primary" onclick="layui.app.searchBtn()">
         </div>
     </div>
 </div>
